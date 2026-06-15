@@ -118,9 +118,6 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-body-md antialiased">
-    <header class="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-center items-center fixed top-0 z-50 bg-background/80 backdrop-blur-md">
-        <a class="font-h2 text-h2 text-primary tracking-tight" href="/">Accesorios Yamileth</a>
-    </header>
     <main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
         <!-- Decorative Background Elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
@@ -159,7 +156,7 @@
                         <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="numero_contacto">Número de Contacto</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">phone</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="numero_contacto" name="numero_contacto" placeholder="+52 123 456 7890" type="tel" value="{{ old('numero_contacto') }}" />
+                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="numero_contacto" name="numero_contacto" placeholder="+503 7890 8909" type="tel" value="{{ old('numero_contacto') }}" />
                         </div>
                         @error('numero_contacto')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>

@@ -114,9 +114,53 @@
           font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         .hero-pattern {
-            background-color: #fff8f8;
-            background-image: radial-gradient(#ecdfe3 1px, transparent 1px);
-            background-size: 24px 24px;
+            background-color: #fff7fb;
+            background-image:
+                radial-gradient(circle at 14% 50%, rgba(249, 168, 212, 0.96) 0%, rgba(249, 168, 212, 0.54) 16%, rgba(249, 168, 212, 0.12) 34%, transparent 60%),
+                radial-gradient(circle at 86% 52%, rgba(160, 205, 133, 0.92) 0%, rgba(160, 205, 133, 0.5) 16%, rgba(160, 205, 133, 0.12) 34%, transparent 60%),
+                radial-gradient(circle at top, rgba(255, 174, 218, 0.3), transparent 42%),
+                radial-gradient(#ecdfe3 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, 24px 24px;
+        }
+        html.dark .hero-pattern {
+            background-color: #0f0b10;
+            background-image:
+                radial-gradient(circle at 14% 50%, rgba(255, 174, 218, 0.32) 0%, rgba(255, 174, 218, 0.18) 16%, rgba(255, 174, 218, 0.06) 34%, transparent 62%),
+                radial-gradient(circle at 86% 50%, rgba(160, 205, 133, 0.26) 0%, rgba(160, 205, 133, 0.14) 16%, rgba(160, 205, 133, 0.05) 34%, transparent 62%),
+                radial-gradient(circle at 50% 0%, rgba(138, 72, 111, 0.42), transparent 42%),
+                radial-gradient(circle at 50% 58%, rgba(255, 174, 218, 0.1), transparent 24%),
+                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, cover, 24px 24px;
+        }
+        .hero-pattern::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 247, 251, 0.14) 0%, rgba(255, 247, 251, 0.7) 100%);
+            pointer-events: none;
+        }
+        html.dark .hero-pattern::before {
+            background: linear-gradient(180deg, rgba(15, 11, 16, 0.02) 0%, rgba(15, 11, 16, 0.62) 100%);
+        }
+        .hero-orb {
+            filter: blur(78px);
+            opacity: 0.72;
+            mix-blend-mode: screen;
+        }
+        html.dark .hero-orb {
+            opacity: 0.5;
+        }
+        .hero-pattern > .hero-orb:nth-of-type(2) {
+            background-color: rgba(249, 168, 212, 0.86);
+        }
+        .hero-pattern > .hero-orb:nth-of-type(3) {
+            background-color: rgba(160, 205, 133, 0.82);
+        }
+        html.dark .hero-pattern > .hero-orb:nth-of-type(2) {
+            background-color: rgba(249, 168, 212, 0.6);
+        }
+        html.dark .hero-pattern > .hero-orb:nth-of-type(3) {
+            background-color: rgba(160, 205, 133, 0.48);
         }
         .ghost-card {
             box-shadow: 0 20px 40px -10px rgba(138, 72, 111, 0.05);
@@ -145,18 +189,18 @@
                     Descubre piezas lindas diseñadas para resaltar. Variedad de accesorios que no encontraras en otro lugar.
                 </p>
 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-<button class="bg-primary text-on-primary px-8 py-4 rounded-full font-body-md font-medium hover:shadow-lg hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto flex items-center gap-2 justify-center">
+<a href="{{ route('login') }}" class="bg-primary text-on-primary px-8 py-4 rounded-full font-body-md font-medium hover:shadow-lg hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto flex items-center gap-2 justify-center">
                         Explorar Colección
                         <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 600;">arrow_forward</span>
-</button>
-<button class="px-8 py-4 rounded-full font-body-md font-medium text-primary border border-primary/20 hover:bg-primary/5 transition-colors w-full sm:w-auto">
+    </a>
+<a href="{{ route('login') }}" class="px-8 py-4 rounded-full font-body-md font-medium text-primary border border-primary/20 hover:bg-primary/5 transition-colors w-full sm:w-auto">
                         Ver Novedades
-                    </button>
+                    </a>
 </div>
 </div>
 <!-- Decorative Elements -->
-<div class="absolute top-1/2 left-10 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl -translate-y-1/2"></div>
-<div class="absolute top-1/2 right-10 w-72 h-72 bg-tertiary-container/20 rounded-full blur-3xl -translate-y-1/2"></div>
+<div class="hero-orb absolute top-1/2 left-10 w-64 h-64 bg-primary-container/20 rounded-full -translate-y-1/2"></div>
+<div class="hero-orb absolute top-1/2 right-10 w-72 h-72 bg-tertiary-container/20 rounded-full -translate-y-1/2"></div>
 </section>
 <!-- Featured Products Section -->
 <section class="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low">
@@ -196,9 +240,9 @@
 @endforelse
 </div>
 <div class="mt-16 text-center">
-<button class="px-8 py-3 rounded-full font-body-md font-medium text-primary border border-primary hover:bg-primary hover:text-on-primary transition-all duration-300">
+<a href="{{ route('login') }}" class="px-8 py-3 rounded-full font-body-md font-medium text-primary border border-primary hover:bg-primary hover:text-on-primary transition-all duration-300 inline-flex items-center justify-center">
                         Ver Catálogo Completo
-                    </button>
+                    </a>
 </div>
 </div>
 </section>
