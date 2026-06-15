@@ -126,25 +126,7 @@
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
 <!-- TopNavBar -->
-<nav class="bg-surface shadow-sm sticky top-0 z-50 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<div class="flex items-center gap-4">
-<img alt="Accesorios Yamileth Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACDJFVO3D5C9XFbni_EYa30U6TSQJMD5vHRt8i7GuOUt2VNduRDfhi5WN6mtQEn3UQoiE39wGINYBtXC_Aj4B3wN2OHEhkk4KlFjWHUbArAOqykNm93nRf46vbkNiOkRMOCMUoH7srzlfH3-92XJaZag1rVFIdnkSkm0VCwpJapQdgJMrFNaV-dIzv38xRTZoZJ2hRpj4uLLBehlTsvryFVGwPUfvVRyVIzTQRCc0nAEoUw1EbIP7TUkMhyUBCpmQ6E0iNjkzPPPLn"/>
-<span class="font-h2 text-h2 text-primary tracking-tight hidden sm:block">Accesorios Yamileth</span>
-</div>
-<div class="hidden md:flex items-center gap-8">
-<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Products</a>
-<a class="text-on-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">My Orders</a>
-<a class="text-on-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">Profile</a>
-</div>
-<div class="flex items-center gap-4">
-<button class="font-body-md text-primary font-medium hover:text-primary-fixed-variant transition-colors">Login</button>
-<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-medium hover:bg-primary/90 transition-colors shadow-sm">Register</button>
-<!-- Mobile Menu Toggle -->
-<button class="md:hidden text-on-surface-variant">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</div>
-</nav>
+@include("partials.navbar")
 <!-- Main Content -->
 <main class="flex-grow">
 <!-- Hero Section -->
@@ -294,26 +276,6 @@
 </section>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-highest w-full py-12 px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter border-t border-outline-variant/50">
-<div class="flex flex-col items-center md:items-start gap-2">
-<span class="font-h3 text-h3 text-primary">Accesorios Yamileth</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left max-w-xs">Elegancia y sencillez en cada detalle.</span>
-</div>
-<nav class="flex flex-wrap justify-center gap-6 font-body-sm text-body-sm">
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Contact Us</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Shipping Info</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors flex items-center gap-1" href="#">
-<span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                Instagram
-            </a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors flex items-center gap-1" href="#">
-<span class="material-symbols-outlined text-[18px]">thumb_up</span>
-                Facebook
-            </a>
-</nav>
-<div class="font-body-sm text-body-sm text-on-surface-variant">
-            © 2024 Accesorios Yamileth. All rights reserved.
-        </div>
+@include("partials.footer")
 </footer>
 </body></html>
