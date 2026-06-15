@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Accesorios Yamileth - Product Catalog</title>
+<title>Accesorios Yamileth - Catálogo de productos</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -113,42 +113,42 @@
 <!-- Sidebar Filters -->
 <aside class="w-full md:w-64 flex-shrink-0 space-y-8">
 <div>
-<h3 class="font-h3 text-h3 text-primary mb-4">Categories</h3>
+<h3 class="font-h3 text-h3 text-primary mb-4">Categorías</h3>
 <ul class="space-y-3">
 <li>
 <label class="flex items-center gap-3 cursor-pointer group">
 <input checked="" class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface group-hover:text-primary transition-colors">All Products</span>
+<span class="text-body-md text-on-surface group-hover:text-primary transition-colors">Todos los productos</span>
 </label>
 </li>
 <li>
 <label class="flex items-center gap-3 cursor-pointer group">
 <input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Necklaces</span>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Collares</span>
 </label>
 </li>
 <li>
 <label class="flex items-center gap-3 cursor-pointer group">
 <input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Earrings</span>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Aretes</span>
 </label>
 </li>
 <li>
 <label class="flex items-center gap-3 cursor-pointer group">
 <input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Bracelets</span>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Pulseras</span>
 </label>
 </li>
 <li>
 <label class="flex items-center gap-3 cursor-pointer group">
 <input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Rings</span>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Anillos</span>
 </label>
 </li>
 </ul>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-primary mb-4">Price Range</h3>
+<h3 class="font-h3 text-h3 text-primary mb-4">Rango de precio</h3>
 <div class="flex items-center gap-2">
 <input class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary" placeholder="Min" type="number"/>
 <span class="text-on-surface-variant">-</span>
@@ -162,19 +162,19 @@
     <h1 class="font-h2 text-h2 text-primary tracking-tight mb-2">Bienvenida, {{ Auth::user()->name }}</h1>
 </div>
 <div class="flex justify-between items-center mb-6">
-<span class="text-body-sm text-on-surface-variant">Showing {{ $products->count() }} products</span>
+<span class="text-body-sm text-on-surface-variant">Mostrando {{ $products->count() }} productos</span>
 <select class="bg-surface-container-low border border-outline-variant rounded-md text-body-sm px-4 py-2 focus:outline-none focus:border-primary text-on-surface">
-<option>Sort by: Featured</option>
-<option>Price: Low to High</option>
-<option>Price: High to Low</option>
-<option>Newest Arrivals</option>
+<option>Ordenar por: destacados</option>
+<option>Precio: menor a mayor</option>
+<option>Precio: mayor a menor</option>
+<option>Más recientes</option>
 </select>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 @forelse ($products as $product)
 <div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
 <div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="{{ $product->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ asset('storage/' . $product->imagen_ruta) }}"/>
+<img alt="{{ $product->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $product->imagen_ruta ? asset('storage/' . $product->imagen_ruta) : asset('images/logo.jpeg') }}"/>
 @if(\Carbon\Carbon::parse($product->created_at)->diffInDays(now()) < 30)
 <div class="absolute top-3 left-3 bg-tertiary text-on-tertiary px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
     NUEVO
@@ -184,16 +184,19 @@
 <div class="p-4 flex flex-col flex-1 text-center">
 <h4 class="font-body-lg text-body-lg text-on-surface mb-1">{{ $product->nombre }}</h4>
 <div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">${{ number_format($product->precio_final, 2) }}</span>
+<span class="font-h3 text-h3 text-primary">${{ number_format($product->precio_unitario, 2) }}</span>
+@if ($product->descuento > 0)
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-full font-label-caps text-label-caps">- ${{ number_format($product->descuento, 2) }}</span>
+@endif
 </div>
-<button class="mt-auto w-full bg-primary-container text-on-primary-container py-2.5 rounded-full font-medium hover:bg-primary hover:text-on-primary transition-colors duration-300">
-                            Encargar
-                        </button>
+<a href="{{ route('productos.show', $product) }}" class="mt-auto w-full bg-primary-container text-on-primary-container py-2.5 rounded-full font-medium hover:bg-primary hover:text-on-primary transition-colors duration-300 inline-block">
+                            Ver detalle
+                        </a>
 </div>
 </div>
 @empty
 <div class="col-span-full text-center py-12">
-    <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos disponibles para ti 🌸</p>
+    <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos 🌸</p>
 </div>
 @endforelse
 </div>

@@ -3,12 +3,55 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        return 'Bienvenido al panel de administración';
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+
+        $total_pedidos_hoy = Order::whereDate('created_at', today())->count();
+        $pedidos_pendientes = Order::where('estado', 'pendiente')->count();
+        $total_productos = Product::count();
+        $productos_sin_stock = Product::where('cantidad_stock', 0)->count();
+
+        $ganancias_mes = OrderItem::query()
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('products', 'products.id', '=', 'order_items.product_id')
+            ->whereBetween('orders.created_at', [$startOfMonth, $endOfMonth])
+            ->selectRaw('COALESCE(SUM(((order_items.precio_unitario - order_items.descuento_aplicado) - products.precio_inversion) * order_items.cantidad), 0) as total')
+            ->value('total');
+
+        $ultimos_pedidos = Order::with(['user', 'orderItems.product'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $period = CarbonPeriod::create(now()->subDays(6)->startOfDay(), now()->startOfDay());
+        $counts = Order::selectRaw('DATE(created_at) as day, COUNT(*) as total')
+            ->whereDate('created_at', '>=', now()->subDays(6)->toDateString())
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->pluck('total', 'day');
+
+        $chartData = collect($period)->map(fn ($date) => [
+            'label' => $date->format('d/m'),
+            'total' => (int) ($counts[$date->toDateString()] ?? 0),
+        ]);
+
+        return view('admin.dashboard', compact(
+            'total_pedidos_hoy',
+            'pedidos_pendientes',
+            'total_productos',
+            'productos_sin_stock',
+            'ganancias_mes',
+            'ultimos_pedidos',
+            'chartData',
+        ));
     }
 }

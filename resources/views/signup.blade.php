@@ -1,3 +1,6 @@
+@auth
+    @php redirect()->intended('/home')->send(); @endphp
+@endauth
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -198,7 +201,7 @@
         </div>
     </main>
     <footer class="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-center items-center border-t border-outline-variant/30">
-        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. All rights reserved.</p>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. Todos los derechos reservados.</p>
     </footer>
 </body>
 </html>

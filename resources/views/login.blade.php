@@ -1,3 +1,6 @@
+@auth
+    @php redirect()->intended('/home')->send(); @endphp
+@endauth
 <!DOCTYPE html>
 
 <html class="light" lang="es">

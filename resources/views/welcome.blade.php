@@ -1,3 +1,6 @@
+@auth
+    @php redirect()->intended('/home')->send(); @endphp
+@endauth
 <!DOCTYPE html>
 
 <html class="light" lang="es"><head>
@@ -132,7 +135,7 @@
 <!-- Hero Section -->
 <section class="hero-pattern relative overflow-hidden pt-20 pb-32 px-margin-mobile md:px-margin-desktop">
 <div class="max-w-container-max mx-auto text-center flex flex-col items-center justify-center relative z-10">
-<span class="font-label-caps text-label-caps text-primary tracking-[0.2em] mb-6 uppercase block">Boutique Collection</span>
+<span class="font-label-caps text-label-caps text-primary tracking-[0.2em] mb-6 uppercase block">Colección boutique</span>
 <h1 class="font-h1-mobile text-h1-mobile md:font-h1 md:text-h1 text-on-surface mb-6 max-w-3xl mx-auto">
                     Elegancia y sencillez <br/>
 <span class="text-primary italic">en cada detalle</span>
