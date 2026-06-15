@@ -1,6 +1,8 @@
 @php
     $adminLinks = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'admin.dashboard'],
+        ['label' => 'Reseñas', 'icon' => 'star_rate', 'route' => 'admin.resenas.index'],
+        ['label' => 'Analítica', 'icon' => 'query_stats', 'route' => 'admin.analitica'],
         ['label' => 'Inventario', 'icon' => 'inventory_2', 'route' => 'admin.inventario.index'],
         ['label' => 'Pedidos', 'icon' => 'shopping_bag', 'route' => 'admin.pedidos.index'],
         ['label' => 'Clientes', 'icon' => 'group', 'route' => 'admin.clientes.index'],

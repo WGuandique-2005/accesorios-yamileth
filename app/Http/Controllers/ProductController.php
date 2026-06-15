@@ -8,7 +8,10 @@ class ProductController extends Controller
 {
     public function show(int $id)
     {
-        $product = Product::activos()->enStock()->find($id);
+        $product = Product::activos()
+            ->enStock()
+            ->with(['productImages', 'reviews.user'])
+            ->find($id);
 
         if (! $product) {
             return redirect('/home')->with('error', 'Producto no disponible.');

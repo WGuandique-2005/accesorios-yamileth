@@ -38,7 +38,7 @@
                 <div class="grid gap-4 sm:grid-cols-[1fr_130px_auto]">
                     <select id="productSelect" class="rounded-lg border-gray-300">
                         @foreach ($products as $product)
-                            <option value="{{ $product->id }}" data-name="{{ $product->nombre }}" data-price="{{ $product->precio_final }}" data-stock="{{ $product->cantidad_stock }}" data-image="{{ $product->imagen_ruta ? asset('storage/'.$product->imagen_ruta) : asset('images/logo.jpeg') }}">
+                            <option value="{{ $product->id }}" data-name="{{ $product->nombre }}" data-price="{{ $product->precio_final }}" data-stock="{{ $product->cantidad_stock }}" data-image="{{ $product->imagen_principal ? asset('storage/'.$product->imagen_principal) : asset('images/logo.jpeg') }}">
                                 {{ $product->nombre }} - ${{ number_format($product->precio_final, 2) }} ({{ $product->cantidad_stock }} disp.)
                             </option>
                         @endforeach

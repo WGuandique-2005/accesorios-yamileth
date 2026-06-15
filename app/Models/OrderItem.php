@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class OrderItem extends Model
 {
@@ -16,6 +17,7 @@ class OrderItem extends Model
         'cantidad',
         'precio_unitario',
         'descuento_aplicado',
+        'precio_inversion_aplicado',
     ];
 
     protected function casts(): array
@@ -23,6 +25,7 @@ class OrderItem extends Model
         return [
             'precio_unitario'    => 'decimal:2',
             'descuento_aplicado' => 'decimal:2',
+            'precio_inversion_aplicado' => 'decimal:2',
         ];
     }
 
@@ -37,6 +40,11 @@ class OrderItem extends Model
         return $this->belongsTo(Product::class)->withTrashed();
     }
 
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
+    }
+
     // ── Accessors ───────────────────────────────────────
 
     // Subtotal de este ítem (precio * cantidad)
@@ -48,7 +56,9 @@ class OrderItem extends Model
     // Ganancia de este ítem
     public function getGananciaAttribute(): float
     {
-        return ($this->precio_unitario - $this->product->precio_inversion - $this->descuento_aplicado)
+        $costo = $this->precio_inversion_aplicado ?? $this->product?->precio_inversion ?? 0;
+
+        return ($this->precio_unitario - $costo - $this->descuento_aplicado)
                * $this->cantidad;
     }
 }

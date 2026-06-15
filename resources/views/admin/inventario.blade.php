@@ -67,8 +67,13 @@
                 <input type="number" step="0.01" name="descuento" value="{{ old('descuento', $product?->descuento ?? 0) }}" min="0" class="w-full rounded-lg border-gray-300">
             </label>
             <label class="block">
-                <span class="mb-1 block text-sm font-semibold text-gray-700">Imagen</span>
+                <span class="mb-1 block text-sm font-semibold text-gray-700">Imagen principal</span>
                 <input type="file" name="imagen" accept="image/jpeg,image/png,image/webp" class="w-full rounded-lg border-gray-300 text-sm">
+            </label>
+            <label class="block lg:col-span-2">
+                <span class="mb-1 block text-sm font-semibold text-gray-700">Galería adicional</span>
+                <input type="file" name="imagenes[]" accept="image/jpeg,image/png,image/webp" multiple class="w-full rounded-lg border-gray-300 text-sm">
+                <p class="mt-1 text-xs text-gray-500">Puedes subir varias fotos para el carrusel del detalle.</p>
             </label>
             <div class="lg:col-span-4 flex gap-3">
                 <button class="rounded-full bg-[#8A486F] px-6 py-3 font-bold text-white">{{ $product ? 'Guardar cambios' : 'Crear producto' }}</button>
@@ -90,6 +95,7 @@
                         <th class="p-4">Inversión</th>
                         <th class="p-4">Venta</th>
                         <th class="p-4">Desc.</th>
+                        <th class="p-4">Fotos</th>
                         <th class="p-4">Ganancia</th>
                         <th class="p-4">Activo</th>
                         <th class="p-4 text-right">Acciones</th>
@@ -98,12 +104,13 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($products as $item)
                         <tr class="{{ $item->trashed() ? 'bg-gray-50 text-gray-400' : '' }}">
-                            <td class="p-4"><img src="{{ $item->imagen_ruta ? asset('storage/'.$item->imagen_ruta) : asset('images/logo.jpeg') }}" alt="{{ $item->nombre }}" class="h-12 w-12 rounded-lg object-cover"></td>
+                            <td class="p-4"><img src="{{ $item->imagen_principal ? asset('storage/'.$item->imagen_principal) : asset('images/logo.jpeg') }}" alt="{{ $item->nombre }}" class="h-12 w-12 rounded-lg object-cover"></td>
                             <td class="p-4 font-semibold">{{ $item->nombre }} @if($item->trashed()) <span class="text-xs">(eliminado)</span> @endif</td>
                             <td class="p-4">{{ $item->cantidad_stock }}</td>
                             <td class="p-4">${{ number_format($item->precio_inversion, 2) }}</td>
                             <td class="p-4">${{ number_format($item->precio_unitario, 2) }}</td>
                             <td class="p-4">${{ number_format($item->descuento, 2) }}</td>
+                            <td class="p-4">{{ $item->productImages->count() }}</td>
                             <td class="p-4 font-bold {{ $item->ganancia_unitaria >= 0 ? 'text-green-700' : 'text-red-700' }}">${{ number_format($item->ganancia_unitaria, 2) }}</td>
                             <td class="p-4">
                                 @if (! $item->trashed())
@@ -124,7 +131,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="p-8 text-center text-gray-500">No hay productos registrados.</td></tr>
+                        <tr><td colspan="10" class="p-8 text-center text-gray-500">No hay productos registrados.</td></tr>
                     @endforelse
                 </tbody>
             </table>

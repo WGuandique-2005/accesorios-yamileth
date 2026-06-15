@@ -14,11 +14,11 @@ class OrderController extends Controller
 {
     public function create(Request $request)
     {
-        $products = Product::activos()->enStock()->orderBy('nombre')->get();
+        $products = Product::activos()->enStock()->with('productImages')->orderBy('nombre')->get();
         $selectedProduct = null;
 
         if ($request->filled('producto')) {
-            $selectedProduct = Product::activos()->enStock()->find($request->integer('producto'));
+            $selectedProduct = Product::activos()->enStock()->with('productImages')->find($request->integer('producto'));
         }
 
         return view('formulario_encargo', compact('products', 'selectedProduct'));
@@ -87,6 +87,7 @@ class OrderController extends Controller
                         'cantidad' => $item['cantidad'],
                         'precio_unitario' => $product->precio_unitario,
                         'descuento_aplicado' => $product->descuento,
+                        'precio_inversion_aplicado' => $product->precio_inversion,
                     ]);
 
                     $product->decrement('cantidad_stock', $item['cantidad']);
@@ -106,7 +107,7 @@ class OrderController extends Controller
     public function myOrders()
     {
         $orders = Order::where('user_id', Auth::id())
-            ->with('orderItems.product')
+            ->with('orderItems.product.productImages', 'orderItems.review')
             ->latest()
             ->get();
 

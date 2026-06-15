@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::withTrashed()->latest()->get();
+        $products = Product::withTrashed()->with('productImages')->latest()->get();
 
         return view('admin.inventario', [
             'products' => $products,
@@ -36,19 +37,19 @@ class ProductController extends Controller
         $data['descuento'] = $data['descuento'] ?? 0;
         $data['activo'] = $request->boolean('activo');
 
-        if ($request->hasFile('imagen')) {
-            $data['imagen_ruta'] = $request->file('imagen')->store('productos', 'public');
-        }
+        DB::transaction(function () use ($request, $data) {
+            $product = Product::create($data);
 
-        Product::create($data);
+            $this->syncProductImages($product, $request);
+        });
 
         return redirect()->route('admin.inventario.index')->with('success', 'Producto creado correctamente.');
     }
 
     public function edit(int $id)
     {
-        $products = Product::withTrashed()->latest()->get();
-        $product = Product::withTrashed()->findOrFail($id);
+        $products = Product::withTrashed()->with('productImages')->latest()->get();
+        $product = Product::withTrashed()->with('productImages')->findOrFail($id);
 
         return view('admin.inventario', [
             'products' => $products,
@@ -64,20 +65,16 @@ class ProductController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $product = Product::withTrashed()->findOrFail($id);
+        $product = Product::withTrashed()->with('productImages')->findOrFail($id);
         $data = $this->validatedData($request);
         $data['descuento'] = $data['descuento'] ?? 0;
         $data['activo'] = $request->boolean('activo');
 
-        if ($request->hasFile('imagen')) {
-            if ($product->imagen_ruta) {
-                Storage::disk('public')->delete($product->imagen_ruta);
-            }
+        DB::transaction(function () use ($request, $product, $data) {
+            $product->update($data);
 
-            $data['imagen_ruta'] = $request->file('imagen')->store('productos', 'public');
-        }
-
-        $product->update($data);
+            $this->syncProductImages($product, $request);
+        });
 
         return redirect()->route('admin.inventario.index')->with('success', 'Producto actualizado correctamente.');
     }
@@ -111,6 +108,43 @@ class ProductController extends Controller
             'descuento' => ['nullable', 'numeric', 'min:0', 'lte:precio_unitario'],
             'activo' => ['nullable', 'boolean'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'imagenes' => ['nullable', 'array'],
+            'imagenes.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
+    }
+
+    private function syncProductImages(Product $product, Request $request): void
+    {
+        $orderedUploads = [];
+
+        if ($request->hasFile('imagen')) {
+            $orderedUploads[] = $request->file('imagen');
+        }
+
+        foreach ((array) $request->file('imagenes', []) as $image) {
+            $orderedUploads[] = $image;
+        }
+
+        if (empty($orderedUploads)) {
+            return;
+        }
+
+        $paths = [];
+
+        foreach ($orderedUploads as $image) {
+            $paths[] = $image->store('productos', 'public');
+        }
+
+        if ($request->hasFile('imagen') || ! $product->imagen_ruta) {
+            $product->update(['imagen_ruta' => $paths[0]]);
+        }
+
+        foreach ($paths as $index => $path) {
+            ProductImage::create([
+                'product_id' => $product->id,
+                'ruta' => $path,
+                'orden' => $index + 1,
+            ]);
+        }
     }
 }

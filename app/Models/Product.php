@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -37,6 +38,21 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function productImages(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('orden');
+    }
+
+    public function primaryImage(): HasOne
+    {
+        return $this->hasOne(ProductImage::class)->orderBy('orden');
+    }
+
     // ── Accessors (columnas calculadas) ─────────────────
 
     // Ganancia por unidad
@@ -61,6 +77,33 @@ class Product extends Model
     public function getValorStockVentaAttribute(): float
     {
         return $this->precio_unitario * $this->cantidad_stock;
+    }
+
+    public function getImagenPrincipalAttribute(): ?string
+    {
+        $image = $this->relationLoaded('productImages')
+            ? $this->productImages->first()
+            : $this->productImages()->first();
+
+        return $image?->ruta ?: $this->imagen_ruta;
+    }
+
+    public function getPromedioCalificacionAttribute(): float
+    {
+        if ($this->relationLoaded('reviews')) {
+            return round((float) $this->reviews->avg('rating'), 1);
+        }
+
+        return round((float) $this->reviews()->avg('rating'), 1);
+    }
+
+    public function getTotalResenasAttribute(): int
+    {
+        if ($this->relationLoaded('reviews')) {
+            return $this->reviews->count();
+        }
+
+        return $this->reviews()->count();
     }
 
     // ── Scopes ──────────────────────────────────────────

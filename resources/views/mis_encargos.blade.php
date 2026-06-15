@@ -20,6 +20,20 @@
     ];
 @endphp
 
+<style>
+    .rating-star {
+        transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .rating-input:checked + .rating-star,
+    .rating-input:checked + .rating-star ~ .rating-star {
+        color: #8A486F;
+    }
+    .rating-input:hover + .rating-star,
+    .rating-input:hover + .rating-star ~ .rating-star {
+        color: #8A486F;
+    }
+</style>
+
 <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
     <div class="mb-8">
         <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Mis encargos</h1>
@@ -48,15 +62,57 @@
             <div class="mt-5 divide-y divide-gray-100">
                 @foreach ($order->orderItems as $item)
                     <div class="flex items-center justify-between gap-4 py-3">
-                        <div class="flex items-center gap-3">
-                            <img src="{{ $item->product?->imagen_ruta ? asset('storage/'.$item->product->imagen_ruta) : asset('images/logo.jpeg') }}" alt="{{ $item->product?->nombre ?? 'Producto' }}" class="h-12 w-12 rounded-lg object-cover">
+                        <div class="flex items-start gap-3">
+                            <img src="{{ $item->product?->imagen_principal ? asset('storage/'.$item->product->imagen_principal) : asset('images/logo.jpeg') }}" alt="{{ $item->product?->nombre ?? 'Producto' }}" class="h-12 w-12 rounded-lg object-cover">
                             <div>
                                 <p class="font-semibold">{{ $item->product?->nombre ?? 'Producto no disponible' }}</p>
                                 <p class="text-sm text-gray-500">Cantidad: {{ $item->cantidad }}</p>
+                                <p class="text-sm text-gray-500">Subtotal: ${{ number_format($item->subtotal, 2) }}</p>
                             </div>
                         </div>
-                        <p class="font-semibold">${{ number_format($item->subtotal, 2) }}</p>
+                        <div class="text-right">
+                            @if ($item->review)
+                                <p class="text-sm font-semibold text-[#8A486F]">Ya calificado</p>
+                                <div class="mt-1 flex items-center justify-end gap-1">
+                                    @for ($star = 1; $star <= 5; $star++)
+                                        <span class="text-lg {{ $star <= $item->review->rating ? 'text-[#8A486F]' : 'text-gray-300' }}">★</span>
+                                    @endfor
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">{{ $item->review->rating }}/5</p>
+                            @elseif ($order->estado === 'entregado')
+                                <p class="text-sm font-semibold text-green-700">Listo para calificar</p>
+                            @else
+                                <p class="text-sm text-gray-500">Disponible al entregarse</p>
+                            @endif
+                        </div>
                     </div>
+
+                    @if (! $item->review && $order->estado === 'entregado')
+                        <form method="POST" action="{{ route('resenas.store') }}" class="mb-4 rounded-lg bg-[#FDF0F4] p-4">
+                            @csrf
+                            <input type="hidden" name="order_item_id" value="{{ $item->id }}">
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <p class="font-semibold text-[#8A486F]">Califica este producto</p>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">1</span>
+                                        <div class="flex items-center gap-1">
+                                            @for ($rating = 1; $rating <= 5; $rating++)
+                                                <label class="cursor-pointer text-2xl text-gray-300 hover:text-[#8A486F]">
+                                                    <input class="rating-input peer sr-only" type="radio" name="rating" value="{{ $rating }}" required>
+                                                    <span class="rating-star peer-checked:text-[#8A486F]">★</span>
+                                                </label>
+                                            @endfor
+                                        </div>
+                                        <span class="text-xs text-gray-500">5</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">Selecciona de 1 a 5 estrellas.</p>
+                                </div>
+                                <button class="rounded-full bg-[#8A486F] px-5 py-2 font-bold text-white">Enviar reseña</button>
+                            </div>
+                            <textarea name="comment" rows="3" maxlength="1000" class="mt-4 w-full rounded-lg border-gray-300" placeholder="Cuéntanos qué te pareció el producto..."></textarea>
+                        </form>
+                    @endif
                 @endforeach
             </div>
 

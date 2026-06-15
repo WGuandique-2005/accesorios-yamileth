@@ -8,7 +8,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
@@ -30,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/encargos/crear', [OrderController::class, 'create'])->name('encargos.create');
     Route::post('/encargos', [OrderController::class, 'store'])->name('encargos.store');
     Route::get('/mis-encargos', [OrderController::class, 'myOrders'])->name('mis-encargos');
+    Route::post('/reseñas', [ReviewController::class, 'store'])->name('resenas.store');
     Route::get('/perfil', [ProfileController::class, 'show'])->name('perfil.show');
     Route::post('/perfil', [ProfileController::class, 'update'])->name('perfil.update');
     Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('perfil.destroy');
@@ -38,6 +42,8 @@ Route::middleware('auth')->group(function () {
 // Admin routes
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/resenas', [AdminReviewController::class, 'index'])->name('admin.resenas.index');
+    Route::get('/admin/analitica', [AnalyticsController::class, 'index'])->name('admin.analitica');
     Route::get('/admin/inventario', [AdminProductController::class, 'index'])->name('admin.inventario.index');
     Route::get('/admin/inventario/crear', [AdminProductController::class, 'create'])->name('admin.inventario.create');
     Route::post('/admin/inventario', [AdminProductController::class, 'store'])->name('admin.inventario.store');

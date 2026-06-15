@@ -26,21 +26,29 @@
                 <ul class="space-y-4">
                     <li><a href="#" class="text-gray-600 hover:text-[#8A486F] transition-colors">Guía de Envíos</a></li>
                     <li><a href="#" class="text-gray-600 hover:text-[#8A486F] transition-colors">Política de Privacidad</a></li>
-                    <li><a href="#" class="text-gray-600 hover:text-[#8A486F] transition-colors">Contacto</a></li>
                 </ul>
             </div>
 
             <!-- Social Media -->
             <div>
                 <h4 class="font-bold text-gray-900 mb-6 uppercase tracking-wider text-sm">Síguenos</h4>
-                <div class="flex space-x-4">
-                    <a href="#" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-[#8A486F] hover:shadow-md transition-all">
+                <div class="flex flex-wrap gap-4">
+                    <a href="https://www.instagram.com/yamileth.accesorios_?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-[#6f3157] border border-[#f9a8d4]/40 hover:text-[#8A486F] hover:shadow-md transition-all">
                         <span class="sr-only">Instagram</span>
-                        <i class="fab fa-instagram"></i>
+                        <span class="text-[11px] font-bold tracking-tight">IG</span>
                     </a>
-                    <a href="#" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-[#8A486F] hover:shadow-md transition-all">
+                    <a href="https://www.facebook.com/yamileth.hernandez.539848" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-[#6f3157] border border-[#f9a8d4]/40 hover:text-[#8A486F] hover:shadow-md transition-all">
                         <span class="sr-only">Facebook</span>
-                        <i class="fab fa-facebook-f"></i>
+                        <span class="text-[13px] font-bold leading-none">f</span>
+                    </a>
+                    <a href="https://wa.me/50362080344" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-[#6f3157] border border-[#f9a8d4]/40 hover:text-[#8A486F] hover:shadow-md transition-all">
+                        <span class="sr-only">WhatsApp</span>
+                        <span class="text-[10px] font-bold tracking-tight">WA</span>
+                    </a>
+                </div>
+                <div class="mt-4">
+                    <a href="https://wa.me/50362080344" target="_blank" rel="noopener noreferrer" class="text-[#6f3157] hover:text-[#8A486F] transition-colors font-medium">
+                        WhatsApp: +503 6208 0344
                     </a>
                 </div>
             </div>

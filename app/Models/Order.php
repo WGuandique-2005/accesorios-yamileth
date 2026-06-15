@@ -49,7 +49,9 @@ class Order extends Model
     public function getGananciaTotalAttribute(): float
     {
         return $this->orderItems->sum(function ($item) {
-            return ($item->precio_unitario - $item->product->precio_inversion - $item->descuento_aplicado)
+            $costo = $item->precio_inversion_aplicado ?? $item->product?->precio_inversion ?? 0;
+
+            return ($item->precio_unitario - $costo - $item->descuento_aplicado)
                    * $item->cantidad;
         });
     }
