@@ -112,6 +112,69 @@
     </script>
     @include('partials.theme')
     <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+
+        .auth-pattern {
+            background-color: #fff6fa;
+            background-image:
+                radial-gradient(circle at 16% 44%, rgba(249, 168, 212, 1) 0%, rgba(249, 168, 212, 0.72) 16%, rgba(249, 168, 212, 0.18) 36%, transparent 62%),
+                radial-gradient(circle at 84% 58%, rgba(160, 205, 133, 0.98) 0%, rgba(160, 205, 133, 0.68) 16%, rgba(160, 205, 133, 0.16) 36%, transparent 62%),
+                radial-gradient(circle at top, rgba(255, 174, 218, 0.42), transparent 42%),
+                radial-gradient(rgba(236, 223, 227, 0.9) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, 24px 24px;
+        }
+
+        html.dark .auth-pattern {
+            background-color: #0f0b10;
+            background-image:
+                radial-gradient(circle at 16% 44%, rgba(255, 174, 218, 0.36) 0%, rgba(255, 174, 218, 0.2) 16%, rgba(255, 174, 218, 0.06) 36%, transparent 62%),
+                radial-gradient(circle at 84% 58%, rgba(160, 205, 133, 0.3) 0%, rgba(160, 205, 133, 0.16) 16%, rgba(160, 205, 133, 0.05) 36%, transparent 62%),
+                radial-gradient(circle at 50% 0%, rgba(138, 72, 111, 0.45), transparent 42%),
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, 24px 24px;
+        }
+
+        .auth-pattern::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 246, 250, 0.08) 0%, rgba(255, 246, 250, 0.7) 100%);
+            pointer-events: none;
+        }
+
+        html.dark .auth-pattern::before {
+            background: linear-gradient(180deg, rgba(15, 11, 16, 0.03) 0%, rgba(15, 11, 16, 0.64) 100%);
+        }
+
+        .hero-orb {
+            filter: blur(78px);
+            opacity: 0.82;
+            mix-blend-mode: screen;
+        }
+
+        html.dark .hero-orb {
+            opacity: 0.52;
+        }
+
+        .auth-pattern .hero-orb:first-child {
+            background-color: rgba(249, 168, 212, 0.92);
+        }
+
+        .auth-pattern .hero-orb:last-child {
+            background-color: rgba(160, 205, 133, 0.9);
+        }
+
+        html.dark .auth-pattern .hero-orb:first-child {
+            background-color: rgba(249, 168, 212, 0.66);
+        }
+
+        html.dark .auth-pattern .hero-orb:last-child {
+            background-color: rgba(160, 205, 133, 0.52);
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
@@ -126,15 +189,19 @@
 </head>
 
 <body
-    class="gradient-bg min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop font-body-md text-on-surface">
-    <main class="w-full max-w-md">
+    class="auth-pattern relative overflow-hidden min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop font-body-md text-on-surface">
+    <div class="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="hero-orb absolute top-1/2 left-10 w-64 h-64 rounded-full -translate-y-1/2"></div>
+        <div class="hero-orb absolute top-1/2 right-10 w-72 h-72 rounded-full -translate-y-1/2"></div>
+    </div>
+    <main class="w-full max-w-md relative z-10">
         <!-- Floating Glass Card -->
         <div
             class="glass-card rounded-xl p-8 md:p-10 border border-white/50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-500">
             <!-- Decorative Elements -->
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-container rounded-full blur-3xl opacity-30">
+            <div class="hero-orb absolute top-1/2 left-[-3rem] w-56 h-56 bg-primary-container/20 rounded-full -translate-y-1/2">
             </div>
-            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-tertiary-container rounded-full blur-3xl opacity-20">
+            <div class="hero-orb absolute top-1/2 right-[-3rem] w-56 h-56 bg-tertiary-container/20 rounded-full -translate-y-1/2">
             </div>
             <!-- Header -->
             <div class="text-center mb-8 relative z-10">

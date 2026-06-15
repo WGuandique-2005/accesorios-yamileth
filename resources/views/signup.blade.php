@@ -113,6 +113,64 @@
             color: theme('colors.on-background');
         }
 
+        .auth-pattern {
+            background-color: #fff6fa;
+            background-image:
+                radial-gradient(circle at 16% 44%, rgba(249, 168, 212, 1) 0%, rgba(249, 168, 212, 0.72) 16%, rgba(249, 168, 212, 0.18) 36%, transparent 62%),
+                radial-gradient(circle at 84% 58%, rgba(160, 205, 133, 0.98) 0%, rgba(160, 205, 133, 0.68) 16%, rgba(160, 205, 133, 0.16) 36%, transparent 62%),
+                radial-gradient(circle at top, rgba(255, 174, 218, 0.42), transparent 42%),
+                radial-gradient(rgba(236, 223, 227, 0.9) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, 24px 24px;
+        }
+
+        html.dark .auth-pattern {
+            background-color: #0f0b10;
+            background-image:
+                radial-gradient(circle at 16% 44%, rgba(255, 174, 218, 0.36) 0%, rgba(255, 174, 218, 0.2) 16%, rgba(255, 174, 218, 0.06) 36%, transparent 62%),
+                radial-gradient(circle at 84% 58%, rgba(160, 205, 133, 0.3) 0%, rgba(160, 205, 133, 0.16) 16%, rgba(160, 205, 133, 0.05) 36%, transparent 62%),
+                radial-gradient(circle at 50% 0%, rgba(138, 72, 111, 0.45), transparent 42%),
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, cover, 24px 24px;
+        }
+
+        .auth-pattern::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 246, 250, 0.1) 0%, rgba(255, 246, 250, 0.72) 100%);
+            pointer-events: none;
+        }
+
+        html.dark .auth-pattern::before {
+            background: linear-gradient(180deg, rgba(15, 11, 16, 0.03) 0%, rgba(15, 11, 16, 0.64) 100%);
+        }
+
+        .hero-orb {
+            filter: blur(78px);
+            opacity: 0.82;
+            mix-blend-mode: screen;
+        }
+
+        html.dark .hero-orb {
+            opacity: 0.52;
+        }
+
+        .auth-pattern>.hero-orb:nth-of-type(2) {
+            background-color: rgba(249, 168, 212, 0.92);
+        }
+
+        .auth-pattern>.hero-orb:nth-of-type(3) {
+            background-color: rgba(160, 205, 133, 0.9);
+        }
+
+        html.dark .auth-pattern>.hero-orb:nth-of-type(2) {
+            background-color: rgba(249, 168, 212, 0.66);
+        }
+
+        html.dark .auth-pattern>.hero-orb:nth-of-type(3) {
+            background-color: rgba(160, 205, 133, 0.52);
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
@@ -125,14 +183,12 @@
 
 <body class="min-h-screen flex flex-col font-body-md antialiased">
     <main
-        class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
+        class="auth-pattern flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
         <!-- Decorative Background Elements -->
-        <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-            <div
-                class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary-container/20 blur-[100px]">
+        <div class="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
+            <div class="hero-orb absolute top-1/2 left-10 w-64 h-64 bg-primary-container/20 rounded-full -translate-y-1/2">
             </div>
-            <div
-                class="absolute top-[60%] -right-[10%] w-[40%] h-[60%] rounded-full bg-surface-container-highest/40 blur-[80px]">
+            <div class="hero-orb absolute top-1/2 right-10 w-72 h-72 bg-tertiary-container/20 rounded-full -translate-y-1/2">
             </div>
         </div>
         <div class="w-full max-w-md">
