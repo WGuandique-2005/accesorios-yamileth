@@ -4,7 +4,7 @@
         <div class="flex justify-between h-20">
             <!-- Logo Section -->
             <div class="flex-shrink-0 flex items-center">
-                    <img src="{{ asset('public/images/logo.jpeg')}}" alt="Accesorios Yamileth" class="items-center gap-2">
+                    <img src="{{ asset('images/logo.jpeg')}}" alt="Accesorios Yamileth" class="h-10 w-auto rounded-full mr-3 object-cover shadow-sm">
                     <span class="font-serif text-2xl font-bold tracking-tight text-[#8A486F]">
                         Accesorios Yamileth
                     </span>
@@ -12,11 +12,12 @@
 
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Productos</a>
+                <a href="#" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Productos</a>
                 
                 @auth
-                    <a href="{{ route('orders.index') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mis Pedidos</a>
-                    <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mi Perfil</a>
+                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Inicio</a>
+                    <a href="#" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mis Pedidos</a>
+                    <a href="#" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mi Perfil</a>
                     
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf

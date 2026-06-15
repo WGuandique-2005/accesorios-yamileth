@@ -109,41 +109,7 @@
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
 <!-- TopNavBar -->
-<nav class="bg-surface dark:bg-surface-dim docked full-width top-0 shadow-sm dark:shadow-none z-50 sticky transition-all duration-300">
-<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<!-- Brand Logo -->
-<a class="font-h2 text-h2 text-primary dark:text-primary-fixed tracking-tight hover:opacity-80 transition-opacity" href="#">
-                Accesorios Yamileth
-            </a>
-<!-- Navigation Links (Desktop) -->
-<div class="hidden md:flex items-center gap-8">
-<!-- Active Item -->
-<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary pb-1 transition-colors duration-200" href="#">
-                    Products
-                </a>
-<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">
-                    My Orders
-                </a>
-<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">
-                    Profile
-                </a>
-</div>
-<!-- Actions & Search -->
-<div class="flex items-center gap-4">
-<button aria-label="Search" class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-[24px]">search</span>
-</button>
-<div class="hidden md:flex items-center gap-4 border-l border-outline-variant pl-4 ml-2">
-<button class="text-primary font-medium hover:text-primary-fixed-variant transition-colors">Login</button>
-<button class="bg-primary text-on-primary px-4 py-2 rounded-full font-medium hover:opacity-90 hover:scale-95 transition-all">Register</button>
-</div>
-<!-- Mobile Menu Toggle -->
-<button class="md:hidden text-on-surface-variant">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</div>
-</div>
-</nav>
+@include('partials.navbar')
 <!-- Main Content Canvas -->
 <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12">
 <!-- Breadcrumbs -->
@@ -225,24 +191,5 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="w-full bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant/50 mt-auto">
-<div class="w-full py-12 px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter max-w-container-max mx-auto">
-<!-- Logo / Brand -->
-<div class="font-h3 text-h3 text-primary">
-                Accesorios Yamileth
-            </div>
-<!-- Links -->
-<div class="flex flex-wrap justify-center gap-6 font-body-sm text-body-sm">
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Contact Us</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Shipping Info</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Instagram</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Facebook</a>
-</div>
-<!-- Copyright -->
-<div class="font-body-sm text-body-sm text-on-surface-variant">
-                © 2024 Accesorios Yamileth. All rights reserved.
-            </div>
-</div>
-</footer>
+@include('partials.footer')
 </body></html>

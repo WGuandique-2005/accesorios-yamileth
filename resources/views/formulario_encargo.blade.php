@@ -118,18 +118,7 @@
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
 <!-- TopNavBar (Nav Suppressed for Checkout Flow, keeping simple brand header) -->
-<header class="w-full bg-surface shadow-sm sticky top-0 z-50">
-<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<a class="font-h2 text-h2 text-primary tracking-tight flex items-center gap-2" href="#">
-<span class="material-symbols-outlined text-3xl">shopping_bag</span>
-                Accesorios Yamileth
-            </a>
-<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="#">
-<span class="material-symbols-outlined">arrow_back</span>
-<span class="hidden md:inline">Volver al carrito</span>
-</a>
-</div>
-</header>
+@include('partials.navbar')
 <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
 <div class="mb-10 text-center md:text-left">
 <h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-primary mb-2">Finalizar Encargo</h1>
@@ -308,9 +297,7 @@
 </div>
 </main>
 <!-- Footer (Minimal for checkout) -->
-<footer class="w-full py-8 px-margin-mobile md:px-margin-desktop text-center border-t border-outline-variant/50 mt-12">
-<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. Pago seguro contra entrega.</p>
-</footer>
+@include('partials.footer')
 <script>
         // Simple Interaction Script
         document.getElementById('submitBtn').addEventListener('click', function(e) {

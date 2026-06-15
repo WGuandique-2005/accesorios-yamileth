@@ -107,40 +107,7 @@
 </head>
 <body class="bg-background text-on-background min-h-screen flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
 <!-- TopNavBar -->
-<nav class="bg-surface shadow-sm docked full-width top-0 z-50 sticky">
-<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<!-- Brand -->
-<div class="flex items-center gap-2">
-<span class="font-h2 text-h2 text-primary tracking-tight">Accesorios Yamileth</span>
-</div>
-<!-- Search (Desktop) -->
-<div class="hidden md:flex flex-1 max-w-md mx-8 relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search jewelry..." type="text"/>
-</div>
-<!-- Navigation Links & Actions -->
-<div class="hidden md:flex items-center gap-6">
-<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Products</a>
-<a class="text-on-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">My Orders</a>
-<a class="text-on-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">Profile</a>
-<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
-<button class="text-primary font-medium hover:text-primary-fixed-variant transition-colors">Login</button>
-<button class="bg-primary text-on-primary px-4 py-2 rounded-full font-medium hover:opacity-80 scale-95 transition-all">Register</button>
-</div>
-</div>
-<!-- Mobile Menu Toggle -->
-<button class="md:hidden text-on-surface p-2">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-</div>
-<!-- Mobile Search (Visible only on mobile) -->
-<div class="md:hidden px-margin-mobile pb-4">
-<div class="relative w-full">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:outline-none focus:border-primary" placeholder="Search..." type="text"/>
-</div>
-</div>
-</nav>
+@include('partials.navbar')
 <!-- Main Content -->
 <main class="flex-1 flex flex-col md:flex-row max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 gap-gutter">
 <!-- Sidebar Filters -->
@@ -191,8 +158,11 @@
 </aside>
 <!-- Product Grid -->
 <section class="flex-1">
+<div class="mb-6">
+    <h1 class="font-h2 text-h2 text-primary tracking-tight mb-2">Bienvenida, {{ Auth::user()->name }}</h1>
+</div>
 <div class="flex justify-between items-center mb-6">
-<span class="text-body-sm text-on-surface-variant">Showing 24 products</span>
+<span class="text-body-sm text-on-surface-variant">Showing {{ $products->count() }} products</span>
 <select class="bg-surface-container-low border border-outline-variant rounded-md text-body-sm px-4 py-2 focus:outline-none focus:border-primary text-on-surface">
 <option>Sort by: Featured</option>
 <option>Price: Low to High</option>
@@ -201,94 +171,34 @@
 </select>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-<!-- Product Card 1 -->
+@forelse ($products as $product)
 <div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
 <div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="Elegant rose gold necklace with a delicate diamond pendant displayed on a minimalist white pedestal. Soft, warm lighting highlights the intricate details of the chain and the sparkle of the gem. The aesthetic is luxurious, feminine, and clean, fitting a premium boutique catalog." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Elegant rose gold necklace with a delicate diamond pendant displayed on a minimalist white pedestal. Soft, warm lighting highlights the intricate details of the chain and the sparkle of the gem. The aesthetic is luxurious, feminine, and clean, fitting a premium boutique catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD90f7qJeGzwDtidwY7rerAKpAm_a9DFa72hvxB92GhXiKexEO2KgPg2bq0Fl7shl1srVYlfPLX3gr4jdpWbYftM_depJ4YrWg-Gl4577YJOw3kDPGxrlUKa-n1T-gyzid0E4KYumIpYc2P72ZUEkGjhZ-_KpCDg7W8DcSGE5WkMvl5uU-9q0fIwgpjpipl0Rd37YSYD0IUkOwTUmPKPiW6bSFgVsaaWW9fh7ibNrIQ5bH0jYckFgnKaNagF27KNDYVk6VNwA_hziBc"/>
-<div class="absolute top-3 left-3 bg-error text-on-error px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
-                            -15%
-                        </div>
+<img alt="{{ $product->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ asset('storage/' . $product->imagen_ruta) }}"/>
+@if(\Carbon\Carbon::parse($product->created_at)->diffInDays(now()) < 30)
+<div class="absolute top-3 left-3 bg-tertiary text-on-tertiary px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
+    NUEVO
+</div>
+@endif
 </div>
 <div class="p-4 flex flex-col flex-1 text-center">
-<h4 class="font-body-lg text-body-lg text-on-surface mb-1">Rose Gold Diamond Pendant</h4>
+<h4 class="font-body-lg text-body-lg text-on-surface mb-1">{{ $product->nombre }}</h4>
 <div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">$125.00</span>
-<span class="text-body-sm text-outline line-through">$147.00</span>
+<span class="font-h3 text-h3 text-primary">${{ number_format($product->precio_final, 2) }}</span>
 </div>
 <button class="mt-auto w-full bg-primary-container text-on-primary-container py-2.5 rounded-full font-medium hover:bg-primary hover:text-on-primary transition-colors duration-300">
                             Encargar
                         </button>
 </div>
 </div>
-<!-- Product Card 2 -->
-<div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
-<div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="A pair of intricate silver hoop earrings resting on a smooth, soft pink fabric background. The lighting is bright and diffused, creating soft shadows that emphasize the artisanal texture of the silver. The composition is centered and elegant, reflecting a high-end boutique style." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A pair of intricate silver hoop earrings resting on a smooth, soft pink fabric background. The lighting is bright and diffused, creating soft shadows that emphasize the artisanal texture of the silver. The composition is centered and elegant, reflecting a high-end boutique style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6xJBzeb6py1pKg2TZKsRS0YIxqucuNGaPtZkfcgtNKV5zzcDvLKBrMrtWdeJL9UJ2v3a8sJ-rVmld_jPyIofplkzQO4-ZlmmrqblAA1SYYRB5SjYnAfFvh0BGCUxO-FMhIQWeKsjAku5R7PNj-VdHei85OHDEbIm9vJ7qDjvPZ8Be61I3zG2qgnbHtumIC_pthZyzCPp6M_tbrzANkPIk53Ib9t8hwRoVlfwZmBHHenEM8dSd3ctn5Il_c9t127fkkDlG2v-YzORc"/>
+@empty
+<div class="col-span-full text-center py-12">
+    <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos disponibles para ti 🌸</p>
 </div>
-<div class="p-4 flex flex-col flex-1 text-center">
-<h4 class="font-body-lg text-body-lg text-on-surface mb-1">Artisan Silver Hoops</h4>
-<div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">$45.00</span>
-</div>
-<button class="mt-auto w-full bg-surface-container text-on-surface py-2.5 rounded-full font-medium border border-outline-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-colors duration-300">
-                            Encargar
-                        </button>
-</div>
-</div>
-<!-- Product Card 3 -->
-<div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
-<div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="A collection of delicate gold stacking rings displayed neatly in a row on a piece of white marble. The scene is brightly lit with natural light, giving a fresh and modern feel. The styling is minimalist, focusing on the fine details of each ring, matching a luxury artisanal brand." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A collection of delicate gold stacking rings displayed neatly in a row on a piece of white marble. The scene is brightly lit with natural light, giving a fresh and modern feel. The styling is minimalist, focusing on the fine details of each ring, matching a luxury artisanal brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgAcbluo_poFAN_260IV1zAe354aMYEeEky8jpu5_iUD1kTIWWajUZ3GTYJk2mrkLhay2QRd_iKo4SVVITRfHJZdSvU8-0NW8ESsPwGben1sSrlvW1zhWCmQR3PAoHt0i41pIqfKSTMSEkjwuh97HBBHQrFJNuLmt2HE_Qks5r6TDdTVWP1jkYoKtwijs1wCNbROtxvcH98HE0ye2KnQAikUWdCFu-ZUkTovtT8xemAKIvWul8EU5DDXMU3SdlHlDz1OyldvrcylBt"/>
-</div>
-<div class="p-4 flex flex-col flex-1 text-center">
-<h4 class="font-body-lg text-body-lg text-on-surface mb-1">Gold Stacking Rings Set</h4>
-<div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">$85.00</span>
-</div>
-<button class="mt-auto w-full bg-surface-container text-on-surface py-2.5 rounded-full font-medium border border-outline-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-colors duration-300">
-                            Encargar
-                        </button>
-</div>
-</div>
-<!-- Product Card 4 -->
-<div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
-<div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="A chunky chain bracelet in shiny gold finish resting delicately on a softly folded beige velvet cloth. The light is focused on the bracelet, creating soft reflections that imply quality and weight. The overall mood is sophisticated and softly feminine." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A chunky chain bracelet in shiny gold finish resting delicately on a softly folded beige velvet cloth. The light is focused on the bracelet, creating soft reflections that imply quality and weight. The overall mood is sophisticated and softly feminine." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxW60LH3d0MB0GWUqAW4QAygbm7rL4iPn7rleYw7tqDVJqJyvhaNBLFZ17668ER16AnGm62XtJIRm9HWa9Whc5PIKw9K-A8t3tux-1bvAGWNp0uYSyyUsI4HwWSU5p4gFvCaCx_QwEW2fXxqH7XDwtbmrM-_UT8Y_oZeGvcQI3m-TbxsT3yZ33CLJtckY5SWtmGnbIvoCRFEB7pHNgi--bs_7y4vXKW16yl_NaIvHjBdXyYMg7tOo1y6RS6wH71H4Qlg4oVBm3W29K"/>
-<div class="absolute top-3 left-3 bg-tertiary text-on-tertiary px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
-                            NEW
-                        </div>
-</div>
-<div class="p-4 flex flex-col flex-1 text-center">
-<h4 class="font-body-lg text-body-lg text-on-surface mb-1">Classic Chain Bracelet</h4>
-<div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">$60.00</span>
-</div>
-<button class="mt-auto w-full bg-surface-container text-on-surface py-2.5 rounded-full font-medium border border-outline-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-colors duration-300">
-                            Encargar
-                        </button>
-</div>
-</div>
+@endforelse
 </div>
 </section>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-highest w-full py-12 px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter border-t border-outline-variant/50 mt-auto">
-<div class="text-center md:text-left">
-<h3 class="font-h3 text-h3 text-primary mb-2">Accesorios Yamileth</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. All rights reserved.</p>
-</div>
-<div class="flex flex-wrap justify-center gap-6">
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Contact Us</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container transition-colors" href="#">Shipping Info</a>
-</div>
-<div class="flex gap-4">
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">
-<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
-</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">
-<span class="material-symbols-outlined" data-icon="thumb_up">thumb_up</span>
-</a>
-</div>
-</footer>
+@include('partials.footer')
 </body></html>

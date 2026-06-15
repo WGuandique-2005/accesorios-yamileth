@@ -110,24 +110,7 @@
 </head>
 <body class="bg-background text-on-background min-h-screen flex flex-col font-body-md">
 <!-- TopNavBar -->
-<nav class="bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none w-full sticky top-0 z-50">
-<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<!-- Brand Logo -->
-<a class="font-h2 text-h2 text-primary dark:text-primary-fixed tracking-tight" href="#">Accesorios Yamileth</a>
-<!-- Navigation Links (Desktop) -->
-<div class="hidden md:flex items-center gap-gutter">
-<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">Products</a>
-<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary hover:text-primary-fixed-variant transition-colors duration-200" href="#">My Orders</a>
-<a class="text-on-surface-variant dark:text-surface-variant font-medium hover:text-primary-fixed-variant transition-colors duration-200" href="#">Profile</a>
-</div>
-<!-- Actions -->
-<div class="flex items-center gap-4">
-<button class="hidden md:block text-on-surface-variant hover:text-primary transition-colors">Login</button>
-<button class="hidden md:block bg-primary text-on-primary px-4 py-2 rounded-full font-label-caps hover:bg-on-primary-fixed-variant transition-colors">Register</button>
-<button class="md:hidden text-on-surface"><span class="material-symbols-outlined">menu</span></button>
-</div>
-</div>
-</nav>
+@include('partials.navbar')
 <!-- Main Content -->
 <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
 <header class="mb-12">
@@ -237,21 +220,5 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant/50 w-full py-12 px-margin-mobile md:px-margin-desktop mt-auto">
-<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-gutter">
-<div class="font-h3 text-h3 text-primary mb-4 md:mb-0">
-                Accesorios Yamileth
-            </div>
-<div class="flex flex-wrap justify-center gap-6 font-body-sm text-body-sm">
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Contact Us</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Shipping Info</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Instagram</a>
-<a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">Facebook</a>
-</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant mt-4 md:mt-0">
-                © 2024 Accesorios Yamileth. All rights reserved.
-            </div>
-</div>
-</footer>
+@include('partials.footer')
 </body></html>

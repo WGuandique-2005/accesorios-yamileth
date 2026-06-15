@@ -163,57 +163,21 @@
 </div>
 <!-- Bento Grid Layout for Products -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-<!-- Product Card 1 -->
+@forelse ($products as $product)
 <article class="ghost-card bg-surface rounded-xl overflow-hidden group flex flex-col relative h-[450px]">
-<button class="absolute top-4 right-4 z-10 w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-<div class="h-2/3 w-full bg-surface-variant relative overflow-hidden">
-<img alt="Collar de Perla" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A delicate gold necklace with a small pearl pendant resting on a soft, blush pink silk fabric. The lighting is bright and natural, creating soft, ethereal shadows that emphasize the high-end, modern feminine boutique aesthetic. The composition is elegant and minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYeejqj-nL5Oj2qv9VLCGQgQuaXC70c088bE5gwuZShzPfzTSQ8ASIvlK2JFnq4rBPTsDCtrILjoPv8xZAAZ_6v-XUqs1_G1rZdt3IyhwRV5PxRMEo5o4uMUsvZen5mSHJ_Sj7-WAgiNOEnbbhXDCdBT2OTndlTCnTwRNvDKxIqhPshFMRuXU1WZaunuCei9ahQVBjH8qVHK0fIpaMD4JJZtawOVrKolFMSXXj5QT_lJjFhM9lGTTOHSx-ymP4bY7dtx8P6m8rcEIO"/>
-</div>
-<div class="p-6 flex-grow flex flex-col justify-between text-center">
-<div>
-<h3 class="font-h3 text-h3 text-on-surface mb-2">Collar Aurora</h3>
-<p class="font-body-md text-body-md text-primary font-medium">$45.00</p>
-</div>
-<button class="text-primary font-medium font-body-sm tracking-wide uppercase hover:text-primary-fixed-variant transition-colors flex items-center justify-center gap-2 mt-4 group/btn">
-                                Hacer encargo
-                                <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">trending_flat</span>
-</button>
-</div>
-</article>
-<!-- Product Card 2 (Taller) -->
-<article class="ghost-card bg-surface rounded-xl overflow-hidden group flex flex-col relative h-[450px] md:h-auto md:row-span-2">
+@if(\Carbon\Carbon::parse($product->created_at)->diffInDays(now()) < 30)
 <span class="absolute top-4 left-4 z-10 bg-tertiary text-on-tertiary px-3 py-1 rounded-full font-label-caps text-label-caps">NUEVO</span>
-<button class="absolute top-4 right-4 z-10 w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-<div class="h-2/3 md:h-3/4 w-full bg-surface-variant relative overflow-hidden">
-<img alt="Pendientes Dorados" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A pair of elegant, minimalist gold hoop earrings arranged symmetrically on a pristine white marble block. The background is a soft, pale pastel pink. The lighting is soft and diffused, highlighting the reflective gold surface to convey a sense of modern luxury and artisanal craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHpnYghKCxjeRiGcWf3CSnKherdXFGb2CjY82WDue7jD8DVqtZetv93r6Hdc1dDRrkfaiW9dDay_aRMptGi9CeqHL0LJXQrwYCBQgbNBAJIpvbvzuQ2TI9Wf_wpUEfjWjvzxXn194jxle8GGEGLW_jFqBnh_HkxB9gmSZkXX5xuuQ_hbfY1pPBHlu8JSYlHaIhFNb07y4SHnIcczmxCUBYDqYhVNpDBfDqAaBeZysj75GFvXtCRxmUeK0OoOC9qWqBOxsY6hIIADbr"/>
-</div>
-<div class="p-6 flex-grow flex flex-col justify-between text-center">
-<div>
-<h3 class="font-h3 text-h3 text-on-surface mb-2">Aros Luna</h3>
-<p class="font-body-md text-body-md text-primary font-medium">$32.00</p>
-</div>
-<button class="text-primary font-medium font-body-sm tracking-wide uppercase hover:text-primary-fixed-variant transition-colors flex items-center justify-center gap-2 mt-4 group/btn">
-                                Hacer encargo
-                                <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">trending_flat</span>
-</button>
-</div>
-</article>
-<!-- Product Card 3 -->
-<article class="ghost-card bg-surface rounded-xl overflow-hidden group flex flex-col relative h-[450px]">
+@endif
 <button class="absolute top-4 right-4 z-10 w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
 <span class="material-symbols-outlined text-xl">favorite</span>
 </button>
 <div class="h-2/3 w-full bg-surface-variant relative overflow-hidden">
-<img alt="Anillo Oro Rosa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A sophisticated rose gold ring featuring a subtle, asymmetrical gem, placed delicately on a muted, soft gray velvet surface. The composition uses generous negative space and soft, ambient studio lighting to create a premium, editorial boutique mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzU24sYwYNhuNZQqmxD9BDGxIDdykR1IVLpyREZL63mn8FQ30JhsCwapFSCRgy6013TjRqI6hZfH1zGzOyq6o4ZfxAMcJv9JhnfJxQdBzRaUkYNaFiIZMRTfm4LpJNHEqPrIb8o7-CziBNT4V4ES4HjSFIt5crkLxhtHqLk48Ebexttm_q_1HlVhCAV4FgJ6MFw0QXxZa74wdj1b-fePLRgNQbwwpgRSVQnfPgt9Wl_FsMX9u7YjY_kROPDKi9jilWaaarSdb9a2fW"/>
+<img alt="{{ $product->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src="{{ asset('storage/' . $product->imagen_ruta) }}"/>
 </div>
 <div class="p-6 flex-grow flex flex-col justify-between text-center">
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-2">Anillo Stella</h3>
-<p class="font-body-md text-body-md text-primary font-medium">$58.00</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-2">{{ $product->nombre }}</h3>
+<p class="font-body-md text-body-md text-primary font-medium">${{ number_format($product->precio_final, 2) }}</p>
 </div>
 <button class="text-primary font-medium font-body-sm tracking-wide uppercase hover:text-primary-fixed-variant transition-colors flex items-center justify-center gap-2 mt-4 group/btn">
                                 Hacer encargo
@@ -221,25 +185,11 @@
 </button>
 </div>
 </article>
-<!-- Product Card 4 -->
-<article class="ghost-card bg-surface rounded-xl overflow-hidden group flex flex-col relative h-[450px] md:col-span-2 lg:col-span-1">
-<button class="absolute top-4 right-4 z-10 w-10 h-10 bg-surface/80 backdrop-blur-sm rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-<div class="h-2/3 w-full bg-surface-variant relative overflow-hidden">
-<img alt="Pulsera Plata" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A delicate silver bracelet draped over a smooth, rounded ceramic stone. The setting is bright and airy, with a soft pinkish-white background that evokes a sense of modern femininity and clean, luxurious minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmHfK_c1bIKt52mLZ9JZQYpP-3o7OBwAI1bYTsu7G4rZY2_zdcw9vvCgyLvTZThNW9bHXFso_QxAlHbFBjahuWp6DyotV3oPvgDFliKBYF331uMgItxh8A19sGt0G83UV4vylHHXdWRiIhebpZJTt8OFn2m7AXkG4TMh-yb4QO0lTuUjnd5_KjPHEhSiQI4NBKnsxHFurTKHxTkEGZsjlijdNjYiELC8BjtOektmdlKQPGbOuBU0M6pwhSnsFbQSr_Wt8BKH_o3GwS"/>
+@empty
+<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+    <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos disponibles para ti 🌸</p>
 </div>
-<div class="p-6 flex-grow flex flex-col justify-between text-center">
-<div>
-<h3 class="font-h3 text-h3 text-on-surface mb-2">Pulsera Alba</h3>
-<p class="font-body-md text-body-md text-primary font-medium">$40.00</p>
-</div>
-<button class="text-primary font-medium font-body-sm tracking-wide uppercase hover:text-primary-fixed-variant transition-colors flex items-center justify-center gap-2 mt-4 group/btn">
-                                Hacer encargo
-                                <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">trending_flat</span>
-</button>
-</div>
-</article>
+@endforelse
 </div>
 <div class="mt-16 text-center">
 <button class="px-8 py-3 rounded-full font-body-md font-medium text-primary border border-primary hover:bg-primary hover:text-on-primary transition-all duration-300">

@@ -117,24 +117,7 @@
 </head>
 <body class="font-body-md text-on-surface">
 <!-- TopAppBar -->
-<header class="w-full top-0 sticky z-50 bg-surface dark:bg-on-background shadow-[0_4px_20px_rgba(138,72,111,0.05)] shadow-sm">
-<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<h1 class="font-h2 text-h2 text-primary dark:text-primary-fixed-dim">Accesorios Yamileth</h1>
-<nav class="hidden md:flex items-center gap-8">
-<a class="text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">Inicio</a>
-<a class="text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">Catálogo</a>
-<a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary transition-colors duration-300" href="#">Perfil</a>
-</nav>
-<div class="flex items-center gap-4">
-<button class="p-2 text-primary dark:text-primary-fixed-dim active:scale-95 transition-transform">
-<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
-</button>
-<button class="p-2 text-primary dark:text-primary-fixed-dim active:scale-95 transition-transform">
-<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
-</button>
-</div>
-</div>
-</header>
+@include('partials.navbar')
 <main class="min-h-screen py-12 px-margin-mobile md:px-margin-desktop">
 <div class="max-w-4xl mx-auto">
 <!-- Header Section -->
@@ -221,18 +204,7 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="w-full bottom-0 mt-auto bg-surface-container dark:bg-inverse-surface border-t border-outline-variant">
-<div class="flex flex-col md:flex-row justify-between items-center gap-4 px-margin-mobile md:px-margin-desktop py-8 max-w-container-max mx-auto">
-<h2 class="font-h3 text-h3 text-primary dark:text-primary-fixed-dim">Accesorios Yamileth</h2>
-<div class="flex gap-6">
-<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Privacidad</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Términos</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Contacto</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Envíos</a>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-secondary-fixed-dim opacity-80">© 2024 Accesorios Yamileth. Elegancia Artesanal.</p>
-</div>
-</footer>
+@include('partials.footer')
 <!-- Toast Notification -->
 <div class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-on-background text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-24 opacity-0 pointer-events-none z-[60]" id="toast">
 <span class="material-symbols-outlined text-tertiary-fixed" data-icon="check_circle">check_circle</span>

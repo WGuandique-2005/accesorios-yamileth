@@ -15,7 +15,7 @@
                 <h4 class="font-bold text-gray-900 mb-6 uppercase tracking-wider text-sm">Explorar</h4>
                 <ul class="space-y-4">
                     <li><a href="{{ url('/') }}" class="text-gray-600 hover:text-[#8A486F] transition-colors">Inicio</a></li>
-                    <li><a href="{{ route('products.index') }}" class="text-gray-600 hover:text-[#8A486F] transition-colors">Colecciones</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-[#8A486F] transition-colors">Colecciones</a></li>
                     <li><a href="#" class="text-gray-600 hover:text-[#8A486F] transition-colors">Novedades</a></li>
                 </ul>
             </div>
