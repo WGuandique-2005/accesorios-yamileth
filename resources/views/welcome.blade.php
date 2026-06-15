@@ -6,7 +6,7 @@
 <html class="light" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Accesorios Yamileth | Elegancia y sencillez</title>
+<title>Accesorios Yamileth</title>
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Google Fonts: Playfair Display & Inter -->
@@ -142,7 +142,7 @@
 <span class="text-primary italic">en cada detalle</span>
 </h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto mb-10">
-                    Descubre piezas artesanales diseñadas para resaltar tu belleza natural. Joyería exclusiva que cuenta una historia en cada destello.
+                    Descubre piezas lindas diseñadas para resaltar. Variedad de accesorios que no encontraras en otro lugar.
                 </p>
 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
 <button class="bg-primary text-on-primary px-8 py-4 rounded-full font-body-md font-medium hover:shadow-lg hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto flex items-center gap-2 justify-center">
@@ -224,7 +224,7 @@
 <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'wght' 300;">redeem</span>
 </div>
 <h4 class="font-h3 text-h3 mb-2 text-on-surface">Empaque Especial</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Cada pedido se prepara como un regalo, ideal para sorprender o consentirte.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cada pedido se prepara como cariño, ideal para sorprender o consentirte.</p>
 </div>
 </div>
 </section>
