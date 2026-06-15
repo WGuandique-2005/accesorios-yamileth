@@ -55,6 +55,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/pedidos', [AdminOrderController::class, 'index'])->name('admin.pedidos.index');
     Route::get('/admin/pedidos/{id}', [AdminOrderController::class, 'show'])->name('admin.pedidos.show');
     Route::patch('/admin/pedidos/{id}/estado', [AdminOrderController::class, 'updateEstado'])->name('admin.pedidos.estado');
+    Route::patch('/admin/pedidos/{id}/envio', [AdminOrderController::class, 'updateEnvio'])->name('admin.pedidos.envio');
 
     Route::get('/admin/clientes', [AdminClientController::class, 'index'])->name('admin.clientes.index');
     Route::get('/admin/clientes/{id}', [AdminClientController::class, 'show'])->name('admin.clientes.show');

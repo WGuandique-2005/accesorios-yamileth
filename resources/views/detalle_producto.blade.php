@@ -6,6 +6,7 @@
     <title>{{ $product->nombre }} | Accesorios Yamileth</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    @include('partials.theme')
 </head>
 <body class="min-h-screen bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
 @include('partials.navbar')

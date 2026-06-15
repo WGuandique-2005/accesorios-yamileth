@@ -8,32 +8,39 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        $search = trim((string) $request->input('q', ''));
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $sort = $request->input('sort');
         $query = \App\Models\Product::query()
             ->with(['productImages', 'reviews'])
             ->activos()
-            ->enStock();
+            ->enStock()
+            ->orderByDesc('created_at');
 
-        if ($request->filled('q')) {
-            $query->where('nombre', 'like', '%'.trim($request->string('q')).'%');
+        if ($search !== '') {
+            $query->whereRaw('LOWER(nombre) LIKE ?', ['%'.mb_strtolower($search).'%']);
         }
 
-        if ($request->filled('min_price')) {
-            $query->whereRaw('(precio_unitario - descuento) >= ?', [$request->input('min_price')]);
+        $products = $query->get();
+
+        if ($minPrice !== null && $minPrice !== '') {
+            $products = $products->filter(fn ($product) => $product->precio_final >= (float) $minPrice);
         }
 
-        if ($request->filled('max_price')) {
-            $query->whereRaw('(precio_unitario - descuento) <= ?', [$request->input('max_price')]);
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $products = $products->filter(fn ($product) => $product->precio_final <= (float) $maxPrice);
         }
 
-        match ($request->input('sort')) {
-            'price_asc' => $query->orderByRaw('(precio_unitario - descuento) asc'),
-            'price_desc' => $query->orderByRaw('(precio_unitario - descuento) desc'),
-            'newest' => $query->orderByDesc('created_at'),
-            default => $query->orderByDesc('created_at'),
+        $products = match ($sort) {
+            'price_asc' => $products->sortBy(fn ($product) => $product->precio_final)->values(),
+            'price_desc' => $products->sortByDesc(fn ($product) => $product->precio_final)->values(),
+            'newest' => $products->sortByDesc('created_at')->values(),
+            default => $products->values(),
         };
 
         return view('home', [
-            'products' => $query->get(),
+            'products' => $products,
             'filters' => $request->only(['q', 'min_price', 'max_price', 'sort']),
         ]);
     }

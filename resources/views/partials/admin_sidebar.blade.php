@@ -14,7 +14,7 @@
         <div class="flex items-center gap-3">
             <img src="{{ asset('images/logo.jpeg') }}" alt="Accesorios Yamileth" class="h-12 w-12 rounded-full object-cover">
             <div>
-                <h2 class="font-serif text-xl font-bold text-[#8A486F]">Yamileth Admin</h2>
+                <h2 class="font-serif text-xl font-bold text-[#8A486F]">Brisa Admin</h2>
                 <p class="text-sm text-gray-500">Panel de gestión</p>
             </div>
         </div>

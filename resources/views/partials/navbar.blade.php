@@ -12,10 +12,8 @@
 
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="{{ url('/home') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Productos</a>
-                
                 @auth
-                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Inicio</a>
+                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Productos</a>
                     <a href="{{ route('mis-encargos') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mis Pedidos</a>
                     <a href="{{ route('perfil.show') }}" class="text-gray-600 hover:text-[#8A486F] font-medium transition-colors">Mi Perfil</a>
                     @if (Auth::user()->rol === 'admin')

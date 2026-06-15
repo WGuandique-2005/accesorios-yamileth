@@ -110,6 +110,7 @@
             }
         }
     </script>
+    @include('partials.theme')
     <style>
         .glass-card {
             background: rgba(255, 255, 255, 0.85);

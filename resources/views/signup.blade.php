@@ -101,6 +101,7 @@
             }
         }
     </script>
+    @include('partials.theme')
     <style>
         body {
             background-color: theme('colors.background');

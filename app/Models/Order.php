@@ -19,6 +19,7 @@ class Order extends Model
         'fecha',
         'hora_recordatorio',
         'precio_total',
+        'cargo_envio',
         'estado',
         'notas',
     ];
@@ -29,6 +30,7 @@ class Order extends Model
             'fecha'             => 'date',
             'hora_recordatorio' => 'datetime:H:i',
             'precio_total'      => 'decimal:2',
+            'cargo_envio'       => 'decimal:2',
         ];
     }
 
@@ -60,6 +62,83 @@ class Order extends Model
     public function getCantidadTotalAttribute(): int
     {
         return $this->orderItems->sum('cantidad');
+    }
+
+    public function getTotalConEnvioAttribute(): float
+    {
+        return (float) $this->precio_total + (float) $this->cargo_envio;
+    }
+
+    public function clienteTelefonoNormalizado(): ?string
+    {
+        $telefono = preg_replace('/\D+/', '', (string) ($this->user?->numero_contacto ?? ''));
+
+        return $telefono !== '' ? $telefono : null;
+    }
+
+    public function puedeEnviarRecordatorioWhatsapp(): bool
+    {
+        return (bool) $this->clienteTelefonoNormalizado()
+            && ($this->estado === 'en_ruta' || $this->fecha?->isToday());
+    }
+
+    public function whatsappRecordatorioMensaje(): string
+    {
+        $cliente = $this->user?->name ?: 'cliente';
+        $hora = $this->hora_recordatorio?->format('H:i');
+        $fecha = $this->fecha?->format('d/m/Y');
+        $items = $this->orderItems->map(function ($item) {
+            return '- ' . ($item->product?->nombre ?? 'Producto') . ' x ' . $item->cantidad;
+        })->implode("\n");
+
+        if ($this->estado === 'en_ruta') {
+            $mensaje = "Hola, buenos días {$cliente}. Le recordamos que su pedido #{$this->id} ya fue enviado";
+        } else {
+            $accion = $this->envio_o_entrega === 'Entrega'
+                ? 'proceder con la entrega'
+                : 'pasar a retirar su paquetito';
+
+            $mensaje = "Hola, buenos días {$cliente}. Le recordamos que el día de hoy puede {$accion}";
+        }
+
+        if ($hora) {
+            $mensaje .= " a partir de las {$hora}";
+        }
+
+        $mensaje .= " sobre su pedido #{$this->id}.";
+
+        if ($fecha) {
+            $mensaje .= "\nFecha del pedido: {$fecha}.";
+        }
+
+        if ($items !== '') {
+            $mensaje .= "\nDetalles del pedido:\n{$items}";
+        }
+
+        $mensaje .= "\nSubtotal: $" . number_format((float) $this->precio_total, 2);
+        $mensaje .= "\nEnvío: $" . number_format((float) $this->cargo_envio, 2);
+        $mensaje .= "\nTotal final: $" . number_format((float) $this->total_con_envio, 2);
+
+        if ($this->lugar_despacho) {
+            $mensaje .= "\nLugar de despacho: {$this->lugar_despacho}";
+        }
+
+        if ($this->lugar_de_recibir) {
+            $mensaje .= "\nLugar de recibir: {$this->lugar_de_recibir}";
+        }
+
+        return $mensaje;
+    }
+
+    public function whatsappRecordatorioUrl(): ?string
+    {
+        $telefono = $this->clienteTelefonoNormalizado();
+
+        if (! $telefono || ! $this->puedeEnviarRecordatorioWhatsapp()) {
+            return null;
+        }
+
+        return 'https://wa.me/' . $telefono . '?text=' . urlencode($this->whatsappRecordatorioMensaje());
     }
 
     // ── Scopes ──────────────────────────────────────────

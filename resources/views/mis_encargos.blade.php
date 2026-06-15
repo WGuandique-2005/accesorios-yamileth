@@ -6,6 +6,7 @@
     <title>Mis encargos | Accesorios Yamileth</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    @include('partials.theme')
 </head>
 <body class="min-h-screen bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
 @include('partials.navbar')
@@ -48,6 +49,21 @@
     @endif
 
     @forelse ($orders as $order)
+        @php
+            $adminPhone = '50362080344';
+            $message = "Hola Accesorios Yamileth, deseo confirmar mi encargo #{$order->id}.\n";
+            $message .= "Cliente: " . Auth::user()->name . "\n";
+            $message .= "Detalles:\n";
+            foreach ($order->orderItems as $item) {
+                $message .= "- " . ($item->product?->nombre ?? 'Producto') . " x " . $item->cantidad . "\n";
+            }
+            $message .= "Subtotal: $" . number_format($order->precio_total, 2) . "\n";
+            $message .= "Envío: $" . number_format($order->cargo_envio, 2) . "\n";
+            $message .= "Total final: $" . number_format($order->total_con_envio, 2) . "\n";
+            $message .= "Tipo: " . $order->envio_o_entrega . "\n";
+            $message .= "Lugar de entrega: " . $order->lugar_de_recibir;
+            $whatsappUrl = "https://wa.me/{$adminPhone}?text=" . urlencode($message);
+        @endphp
         <article class="mb-5 rounded-xl bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -117,10 +133,21 @@
             </div>
 
             <div class="mt-5 grid gap-3 rounded-lg bg-[#FDF0F4] p-4 text-sm sm:grid-cols-3">
-                <div><span class="block text-gray-500">Total</span><strong>${{ number_format($order->precio_total, 2) }}</strong></div>
+                <div><span class="block text-gray-500">Subtotal</span><strong>${{ number_format($order->precio_total, 2) }}</strong></div>
+                <div><span class="block text-gray-500">Envío</span><strong>${{ number_format($order->cargo_envio, 2) }}</strong></div>
+                <div><span class="block text-gray-500">Total final</span><strong>${{ number_format($order->total_con_envio, 2) }}</strong></div>
                 <div><span class="block text-gray-500">Tipo</span><strong>{{ $order->envio_o_entrega }}</strong></div>
                 <div><span class="block text-gray-500">Despacho</span><strong>{{ $order->lugar_despacho ?: 'No especificado' }}</strong></div>
                 <div class="sm:col-span-3"><span class="block text-gray-500">Recibir en</span><strong>{{ $order->lugar_de_recibir }}</strong></div>
+
+                @if ($order->estado === 'pendiente')
+                    <div class="sm:col-span-3 mt-2">
+                        <a href="{{ $whatsappUrl }}" target="_blank" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#20ba5a] transition-all transform active:scale-95 shadow-sm">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.018-.57-.018-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.297.149.534.238.72.304.187.066.354.054.484-.035.13-.089.563-.383.712-.52.149-.137.297-.114.502-.074.205.04 1.286.513 1.504.607.218.094.367.141.42.237.053.097.053.454-.144.603zM12.003 2C6.478 2 2 6.478 2 12.003c0 2.12.86 4.09 2.23 5.65L2 22l4.46-1.16c1.51.78 3.22 1.2 5.04 1.2 5.525 0 10-4.478 10-10.003 0-5.525-4.478-10-10-10z"/></svg>
+                            Confirmar Pedido por WhatsApp
+                        </a>
+                    </div>
+                @endif
             </div>
         </article>
     @empty

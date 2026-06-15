@@ -47,4 +47,26 @@ class OrderController extends Controller
             'estado' => $order->estado,
         ]);
     }
+
+    public function updateEnvio(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'envio_o_entrega' => ['required', Rule::in(['Envío', 'Entrega'])],
+            'lugar_despacho' => ['nullable', 'string', 'max:100'],
+            'lugar_de_recibir' => ['required', 'string', 'max:255'],
+            'cargo_envio' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->update([
+            'envio_o_entrega' => $validated['envio_o_entrega'],
+            'lugar_despacho' => $validated['lugar_despacho'] ?? null,
+            'lugar_de_recibir' => $validated['lugar_de_recibir'],
+            'cargo_envio' => $validated['cargo_envio'],
+        ]);
+
+        return redirect()
+            ->route('admin.pedidos.show', $order)
+            ->with('success', 'Datos de envío actualizados correctamente.');
+    }
 }

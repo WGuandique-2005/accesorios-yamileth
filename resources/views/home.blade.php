@@ -99,6 +99,7 @@
             }
         }
     </script>
+@include('partials.theme')
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -134,7 +135,7 @@
         </select>
     </div>
     <div class="flex gap-2">
-        <button class="flex-1 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary">Aplicar</button>
+        <button type="submit" class="flex-1 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary">Buscar</button>
         <a href="{{ route('home') }}" class="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface">Limpiar</a>
     </div>
 </form>
@@ -172,14 +173,6 @@
 </label>
 </li>
 </ul>
-</div>
-<div>
-<h3 class="font-h3 text-h3 text-primary mb-4">Rango de precio</h3>
-<div class="flex items-center gap-2">
-<input class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary" placeholder="Min" type="number"/>
-<span class="text-on-surface-variant">-</span>
-<input class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary" placeholder="Max" type="number"/>
-</div>
 </div>
 </aside>
 <!-- Product Grid -->

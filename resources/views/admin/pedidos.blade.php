@@ -6,6 +6,7 @@
     <title>Pedidos admin | Accesorios Yamileth</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    @include('partials.theme')
 </head>
 <body class="bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
 @include('partials.admin_sidebar')
@@ -26,6 +27,19 @@
         <p class="mt-2 text-gray-600">Consulta y actualiza el estado de los encargos.</p>
     </div>
 
+    @if (session('success'))
+        <div class="mb-5 rounded-lg bg-green-50 px-4 py-3 text-green-700">{{ session('success') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-red-700">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="mb-5 flex flex-wrap gap-2">
         <a href="{{ route('admin.pedidos.index') }}" class="rounded-full px-4 py-2 text-sm font-bold {{ request('estado') ? 'border border-gray-300 text-gray-700' : 'bg-[#8A486F] text-white' }}">Todos</a>
         @foreach ($statuses as $status)
@@ -42,6 +56,8 @@
                             <th class="p-4">Pedido</th>
                             <th class="p-4">Cliente</th>
                             <th class="p-4">Productos</th>
+                            <th class="p-4">Subtotal</th>
+                            <th class="p-4">Envío</th>
                             <th class="p-4">Total</th>
                             <th class="p-4">Entrega</th>
                             <th class="p-4">Fecha</th>
@@ -59,6 +75,8 @@
                                 </td>
                                 <td class="p-4">{{ $order->cantidad_total }} productos</td>
                                 <td class="p-4 font-bold text-[#8A486F]">${{ number_format($order->precio_total, 2) }}</td>
+                                <td class="p-4">${{ number_format($order->cargo_envio, 2) }}</td>
+                                <td class="p-4 font-bold text-[#8A486F]">${{ number_format($order->total_con_envio, 2) }}</td>
                                 <td class="p-4">{{ $order->envio_o_entrega }}<p class="text-xs text-gray-500">{{ $order->lugar_despacho }}</p></td>
                                 <td class="p-4">{{ $order->fecha->format('d/m/Y') }}</td>
                                 <td class="p-4">
@@ -71,7 +89,7 @@
                                 <td class="p-4 text-right"><a href="{{ route('admin.pedidos.show', $order) }}" class="font-semibold text-[#8A486F] hover:underline">Ver</a></td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="p-8 text-center text-gray-500">No hay pedidos.</td></tr>
+                            <tr><td colspan="10" class="p-8 text-center text-gray-500">No hay pedidos.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -81,6 +99,9 @@
 
         <aside class="h-fit rounded-xl bg-white p-6 shadow-sm">
             @if ($selectedOrder)
+                @php
+                    $whatsappUrl = $selectedOrder->whatsappRecordatorioUrl();
+                @endphp
                 <h2 class="text-xl font-bold text-[#8A486F]">Pedido #{{ $selectedOrder->id }}</h2>
                 <div class="mt-4 space-y-2 text-sm">
                     <p><strong>Cliente:</strong> {{ $selectedOrder->user?->name }} ({{ $selectedOrder->user?->email }})</p>
@@ -100,9 +121,55 @@
                     @endforeach
                 </div>
                 <div class="mt-5 rounded-lg bg-[#FDF0F4] p-4">
-                    <div class="flex justify-between"><span>Total</span><strong>${{ number_format($selectedOrder->precio_total, 2) }}</strong></div>
+                    <div class="flex justify-between"><span>Subtotal</span><strong>${{ number_format($selectedOrder->precio_total, 2) }}</strong></div>
+                    <div class="mt-2 flex justify-between"><span>Envío</span><strong>${{ number_format($selectedOrder->cargo_envio, 2) }}</strong></div>
+                    <div class="mt-2 flex justify-between"><span>Total final</span><strong>${{ number_format($selectedOrder->total_con_envio, 2) }}</strong></div>
                     <div class="mt-2 flex justify-between"><span>Ganancia</span><strong class="text-green-700">${{ number_format($selectedOrder->ganancia_total, 2) }}</strong></div>
                 </div>
+
+                @if ($whatsappUrl)
+                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="mt-4 flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 font-bold text-white hover:bg-[#20ba5a] transition-all">
+                        <span>Enviar recordatorio por WhatsApp</span>
+                    </a>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Se abrirá un mensaje al cliente con los datos del pedido y el recordatorio correspondiente.
+                    </p>
+                @elseif ($selectedOrder->estado === 'en_ruta' || $selectedOrder->fecha?->isToday())
+                    <div class="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
+                        No se puede generar el enlace porque el cliente no tiene número de contacto registrado.
+                    </div>
+                @else
+                    <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+                        El recordatorio por WhatsApp estará disponible cuando el pedido esté en ruta o sea su fecha de entrega.
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('admin.pedidos.envio', $selectedOrder) }}" class="mt-4 rounded-lg border border-[#eadde3] p-4">
+                    @csrf
+                    @method('PATCH')
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="block sm:col-span-2">
+                            <span class="mb-1 block text-sm font-semibold text-gray-700">Método de envío</span>
+                            <select name="envio_o_entrega" class="w-full rounded-lg border-gray-300">
+                                <option value="Envío" @selected(old('envio_o_entrega', $selectedOrder->envio_o_entrega) === 'Envío')>Envío</option>
+                                <option value="Entrega" @selected(old('envio_o_entrega', $selectedOrder->envio_o_entrega) === 'Entrega')>Entrega</option>
+                            </select>
+                        </label>
+                        <label class="block sm:col-span-2">
+                            <span class="mb-1 block text-sm font-semibold text-gray-700">Lugar de despacho</span>
+                            <input type="text" name="lugar_despacho" value="{{ old('lugar_despacho', $selectedOrder->lugar_despacho) }}" maxlength="100" class="w-full rounded-lg border-gray-300" placeholder="Melo Express, sucursal, etc.">
+                        </label>
+                        <label class="block sm:col-span-2">
+                            <span class="mb-1 block text-sm font-semibold text-gray-700">Lugar donde se recibirá</span>
+                            <input type="text" name="lugar_de_recibir" value="{{ old('lugar_de_recibir', $selectedOrder->lugar_de_recibir) }}" maxlength="255" required class="w-full rounded-lg border-gray-300" placeholder="Dirección, sucursal o punto de encuentro">
+                        </label>
+                        <label class="block">
+                            <span class="mb-1 block text-sm font-semibold text-gray-700">Cargo extra por envío</span>
+                            <input type="number" step="0.01" min="0" name="cargo_envio" value="{{ old('cargo_envio', $selectedOrder->cargo_envio) }}" class="w-full rounded-lg border-gray-300">
+                        </label>
+                    </div>
+                    <button class="mt-4 rounded-full bg-[#8A486F] px-5 py-2 font-bold text-white">Guardar cambios de envío</button>
+                </form>
             @else
                 <p class="text-gray-500">Selecciona un pedido para ver el detalle completo.</p>
             @endif
@@ -136,6 +203,7 @@
             }
         });
     });
+
 </script>
 </body>
 </html>
