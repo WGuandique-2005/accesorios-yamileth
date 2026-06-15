@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 
-<html class="light" lang="es"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Accesorios Yamileth - Catálogo de productos</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Accesorios Yamileth - Catálogo de productos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -99,130 +107,172 @@
             }
         }
     </script>
-@include('partials.theme')
-<style>
+    @include('partials.theme')
+    <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
-<!-- TopNavBar -->
-@include('partials.navbar')
-<!-- Main Content -->
-<main class="flex-1 flex flex-col md:flex-row max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 gap-gutter">
-<!-- Sidebar Filters -->
-<aside class="w-full md:w-64 flex-shrink-0 space-y-8">
-<form method="GET" action="{{ route('home') }}" class="rounded-xl bg-surface p-4 shadow-[0_8px_30px_rgb(138,72,111,0.08)] space-y-4">
-    <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2" for="q">Buscar producto</label>
-        <input id="q" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre del producto" class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
-    </div>
-    <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2">Rango de precio</label>
-        <div class="grid grid-cols-2 gap-2">
-            <input name="min_price" value="{{ $filters['min_price'] ?? '' }}" placeholder="Mín." type="number" step="0.01" min="0" class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
-            <input name="max_price" value="{{ $filters['max_price'] ?? '' }}" placeholder="Máx." type="number" step="0.01" min="0" class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
-        </div>
-    </div>
-    <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2" for="sort">Ordenar por</label>
-        <select id="sort" name="sort" class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
-            <option value="">Más nuevo</option>
-            <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Precio menor</option>
-            <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Precio mayor</option>
-            <option value="newest" @selected(($filters['sort'] ?? '') === 'newest')>Más nuevo</option>
-        </select>
-    </div>
-    <div class="flex gap-2">
-        <button type="submit" class="flex-1 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary">Buscar</button>
-        <a href="{{ route('home') }}" class="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface">Limpiar</a>
-    </div>
-</form>
-<div>
-<h3 class="font-h3 text-h3 text-primary mb-4">Categorías</h3>
-<ul class="space-y-3">
-<li>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input checked="" class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface group-hover:text-primary transition-colors">Todos los productos</span>
-</label>
-</li>
-<li>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Collares</span>
-</label>
-</li>
-<li>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Aretes</span>
-</label>
-</li>
-<li>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Pulseras</span>
-</label>
-</li>
-<li>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5" type="checkbox"/>
-<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Anillos</span>
-</label>
-</li>
-</ul>
-</div>
-</aside>
-<!-- Product Grid -->
-<section class="flex-1">
-<div class="mb-6">
-    <h1 class="font-h2 text-h2 text-primary tracking-tight mb-2">Bienvenida, {{ Auth::user()->name }}</h1>
-</div>
-<div class="flex justify-between items-center mb-6">
-<span class="text-body-sm text-on-surface-variant">Mostrando {{ $products->count() }} productos</span>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-@forelse ($products as $product)
-<div class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
-<div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
-<img alt="{{ $product->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $product->imagen_principal ? asset('storage/' . $product->imagen_principal) : asset('images/logo.jpeg') }}"/>
-@if(\Carbon\Carbon::parse($product->created_at)->diffInDays(now()) < 30)
-<div class="absolute top-3 left-3 bg-tertiary text-on-tertiary px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
-    NUEVO
-</div>
-@endif
-</div>
-<div class="p-4 flex flex-col flex-1 text-center">
-<h4 class="font-body-lg text-body-lg text-on-surface mb-1">{{ $product->nombre }}</h4>
-<div class="flex justify-center items-center gap-2 mb-4">
-<span class="font-h3 text-h3 text-primary">${{ number_format($product->precio_unitario, 2) }}</span>
-@if ($product->descuento > 0)
-<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-full font-label-caps text-label-caps">- ${{ number_format($product->descuento, 2) }}</span>
-@endif
-</div>
-<div class="mb-4 flex flex-col items-center gap-1 text-sm text-on-surface-variant">
-    <div class="flex items-center gap-1" aria-label="Calificación {{ number_format($product->promedio_calificacion ?: 0, 1) }} de 5">
-        @for ($star = 1; $star <= 5; $star++)
-            <span class="{{ $star <= round($product->promedio_calificacion ?: 0) ? 'text-[#8A486F]' : 'text-gray-300' }}">★</span>
-        @endfor
-    </div>
-    <span>{{ number_format($product->promedio_calificacion ?: 0, 1) }}/5 · {{ $product->total_resenas }} reseñas</span>
-</div>
-<a href="{{ route('productos.show', $product) }}" class="mt-auto w-full bg-primary-container text-on-primary-container py-2.5 rounded-full font-medium hover:bg-primary hover:text-on-primary transition-colors duration-300 inline-block">
-                            Ver detalle
-                        </a>
-</div>
-</div>
-@empty
-<div class="col-span-full text-center py-12">
-    <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos 🌸</p>
-</div>
-@endforelse
-</div>
-</section>
-</main>
-<!-- Footer -->
-@include('partials.footer')
-</body></html>
+
+<body
+    class="bg-background text-on-background min-h-screen flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
+    <!-- TopNavBar -->
+    @include('partials.navbar')
+    <!-- Main Content -->
+    <main
+        class="flex-1 flex flex-col md:flex-row max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 gap-gutter">
+        <!-- Sidebar Filters -->
+        <aside class="w-full md:w-64 flex-shrink-0 space-y-8">
+            <form method="GET" action="{{ route('home') }}"
+                class="rounded-xl bg-surface p-4 shadow-[0_8px_30px_rgb(138,72,111,0.08)] space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface mb-2" for="q">Buscar producto</label>
+                    <input id="q" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre del producto"
+                        class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface mb-2">Rango de precio</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input name="min_price" value="{{ $filters['min_price'] ?? '' }}" placeholder="Mín."
+                            type="number" step="0.01" min="0"
+                            class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                        <input name="max_price" value="{{ $filters['max_price'] ?? '' }}" placeholder="Máx."
+                            type="number" step="0.01" min="0"
+                            class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface mb-2" for="sort">Ordenar por</label>
+                    <select id="sort" name="sort"
+                        class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                        <option value="">Más nuevo</option>
+                        <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Precio menor
+                        </option>
+                        <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Precio mayor
+                        </option>
+                        <option value="newest" @selected(($filters['sort'] ?? '') === 'newest')>Más nuevo</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit"
+                        class="flex-1 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary">Buscar</button>
+                    <a href="{{ route('home') }}"
+                        class="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface">Limpiar</a>
+                </div>
+            </form>
+            <div>
+                <h3 class="font-h3 text-h3 text-primary mb-4">Categorías</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input checked=""
+                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
+                                type="checkbox" />
+                            <span class="text-body-md text-on-surface group-hover:text-primary transition-colors">Todos
+                                los productos</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
+                                type="checkbox" />
+                            <span
+                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Collares</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
+                                type="checkbox" />
+                            <span
+                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Aretes</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
+                                type="checkbox" />
+                            <span
+                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Pulseras</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
+                                type="checkbox" />
+                            <span
+                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Anillos</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        <!-- Product Grid -->
+        <section class="flex-1">
+            <div class="mb-6">
+                <h1 class="font-h2 text-h2 text-primary tracking-tight mb-2">Bienvenida, {{ Auth::user()->name }}</h1>
+            </div>
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-body-sm text-on-surface-variant">Mostrando {{ $products->count() }} productos</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @forelse ($products as $product)
+                    <div
+                        class="group relative bg-surface rounded-xl flex flex-col shadow-[0_8px_30px_rgb(138,72,111,0.06)] hover:shadow-[0_8px_30px_rgb(138,72,111,0.12)] hover:-translate-y-1 transition-all duration-300">
+                        <div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-container-low">
+                            <img alt="{{ $product->nombre }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                src="{{ $product->imagen_principal ? asset('storage/' . $product->imagen_principal) : asset('images/logo.jpeg') }}" />
+                            @if(\Carbon\Carbon::parse($product->created_at)->diffInDays(now()) < 30)
+                                <div
+                                    class="absolute top-3 left-3 bg-tertiary text-on-tertiary px-2 py-1 rounded-full font-label-caps text-label-caps shadow-sm">
+                                    NUEVO
+                                </div>
+                            @endif
+                        </div>
+                        <div class="p-4 flex flex-col flex-1 text-center">
+                            <h4 class="font-body-lg text-body-lg text-on-surface mb-1">{{ $product->nombre }}</h4>
+                            <div class="flex justify-center items-center gap-2 mb-4">
+                                <span
+                                    class="font-h3 text-h3 text-primary">${{ number_format($product->precio_unitario, 2) }}</span>
+                                @if ($product->descuento > 0)
+                                    <span
+                                        class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-full font-label-caps text-label-caps">-
+                                        ${{ number_format($product->descuento, 2) }}</span>
+                                @endif
+                            </div>
+                            <div class="mb-4 flex flex-col items-center gap-1 text-sm text-on-surface-variant">
+                                <div class="flex items-center gap-1"
+                                    aria-label="Calificación {{ number_format($product->promedio_calificacion ?: 0, 1) }} de 5">
+                                    @for ($star = 1; $star <= 5; $star++)
+                                        <span
+                                            class="{{ $star <= round($product->promedio_calificacion ?: 0) ? 'text-[#8A486F]' : 'text-gray-300' }}">★</span>
+                                    @endfor
+                                </div>
+                                <span>{{ number_format($product->promedio_calificacion ?: 0, 1) }}/5 ·
+                                    {{ $product->total_resenas }} reseñas</span>
+                            </div>
+                            <a href="{{ route('productos.show', $product) }}"
+                                class="mt-auto w-full bg-primary-container text-on-primary-container py-2.5 rounded-full font-medium hover:bg-primary hover:text-on-primary transition-colors duration-300 inline-block">
+                                Ver detalle
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full text-center py-12">
+                        <p class="font-h3 text-h3 text-on-surface-variant">Pronto habrá productos 🌸</p>
+                    </div>
+                @endforelse
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    @include('partials.footer')
+</body>
+
+</html>

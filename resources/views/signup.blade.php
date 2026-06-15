@@ -3,13 +3,18 @@
 @endauth
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Registro - Accesorios Yamileth</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -117,73 +122,111 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col font-body-md antialiased">
-    <main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
+    <main
+        class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
         <!-- Decorative Background Elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-            <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary-container/20 blur-[100px]"></div>
-            <div class="absolute top-[60%] -right-[10%] w-[40%] h-[60%] rounded-full bg-surface-container-highest/40 blur-[80px]"></div>
+            <div
+                class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary-container/20 blur-[100px]">
+            </div>
+            <div
+                class="absolute top-[60%] -right-[10%] w-[40%] h-[60%] rounded-full bg-surface-container-highest/40 blur-[80px]">
+            </div>
         </div>
         <div class="w-full max-w-md">
             <div class="glass-card rounded-xl p-8 md:p-10 relative">
                 <div class="text-center mb-8">
                     <h1 class="font-h2 text-h2 text-primary mb-2">Crear Cuenta</h1>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant">Únete para una experiencia de compra exclusiva.</p>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Únete para una experiencia de compra
+                        exclusiva.</p>
                 </div>
                 <form action="{{ route('register') }}" class="space-y-5" method="POST">
                     @csrf
                     <div>
-                        <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="name">Nombre Completo</label>
+                        <label
+                            class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider"
+                            for="name">Nombre Completo</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="name" name="name" placeholder="María Pérez" required type="text" value="{{ old('name') }}" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
+                            <input
+                                class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50"
+                                id="name" name="name" placeholder="María Pérez" required type="text"
+                                value="{{ old('name') }}" />
                         </div>
                         @error('name')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="email">Correo Electrónico</label>
+                        <label
+                            class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider"
+                            for="email">Correo Electrónico</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="email" name="email" placeholder="maria@ejemplo.com" required type="email" value="{{ old('email') }}" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
+                            <input
+                                class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50"
+                                id="email" name="email" placeholder="maria@ejemplo.com" required type="email"
+                                value="{{ old('email') }}" />
                         </div>
                         @error('email')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="numero_contacto">Número de Contacto</label>
+                        <label
+                            class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider"
+                            for="numero_contacto">Número de Contacto</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">phone</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="numero_contacto" name="numero_contacto" placeholder="+503 7890 8909" type="tel" value="{{ old('numero_contacto') }}" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">phone</span>
+                            <input
+                                class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50"
+                                id="numero_contacto" name="numero_contacto" placeholder="+503 7890 8909" type="tel"
+                                value="{{ old('numero_contacto') }}" />
                         </div>
                         @error('numero_contacto')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="password">Contraseña</label>
+                        <label
+                            class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider"
+                            for="password">Contraseña</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="password" name="password" placeholder="••••••••" required type="password" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
+                            <input
+                                class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50"
+                                id="password" name="password" placeholder="••••••••" required type="password" />
                         </div>
                         @error('password')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider" for="password_confirmation">Confirmar Contraseña</label>
+                        <label
+                            class="block font-label-caps text-label-caps text-on-surface mb-2 uppercase tracking-wider"
+                            for="password_confirmation">Confirmar Contraseña</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50" id="password_confirmation" name="password_confirmation" placeholder="••••••••" required type="password" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
+                            <input
+                                class="w-full pl-10 pr-4 py-3 rounded-lg bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors duration-200 font-body-sm text-body-sm text-on-surface placeholder:text-outline/50"
+                                id="password_confirmation" name="password_confirmation" placeholder="••••••••" required
+                                type="password" />
                         </div>
                         @error('password_confirmation')
                             <p class="text-error text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div class="pt-4">
-                        <button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-[1px] flex justify-center items-center gap-2" type="submit">
+                        <button
+                            class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-[1px] flex justify-center items-center gap-2"
+                            type="submit">
                             <span>Crear cuenta</span>
                             <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
@@ -192,14 +235,18 @@
                 <div class="mt-8 text-center border-t border-outline-variant/30 pt-6">
                     <p class="font-body-sm text-body-sm text-on-surface-variant">
                         ¿Ya tienes cuenta?
-                        <a class="text-primary font-medium hover:text-primary-fixed-variant transition-colors underline underline-offset-4 decoration-primary/30 hover:decoration-primary" href="{{ route('login') }}">Inicia sesión</a>
+                        <a class="text-primary font-medium hover:text-primary-fixed-variant transition-colors underline underline-offset-4 decoration-primary/30 hover:decoration-primary"
+                            href="{{ route('login') }}">Inicia sesión</a>
                     </p>
                 </div>
             </div>
         </div>
     </main>
-    <footer class="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-center items-center border-t border-outline-variant/30">
-        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. Todos los derechos reservados.</p>
+    <footer
+        class="w-full py-6 px-margin-mobile md:px-margin-desktop flex justify-center items-center border-t border-outline-variant/30">
+        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Accesorios Yamileth. Todos los derechos
+            reservados.</p>
     </footer>
 </body>
+
 </html>

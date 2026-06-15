@@ -153,7 +153,8 @@
                             class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
                         <input
                             class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-10 pr-4 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all duration-300 placeholder:text-outline/50"
-                            id="email" name="email" placeholder="tu@correo.com" required="" type="email" value="{{ old('email') }}" />
+                            id="email" name="email" placeholder="tu@correo.com" required="" type="email"
+                            value="{{ old('email') }}" />
                     </div>
                     @error('email')
                         <p class="text-error text-sm mt-1">{{ $message }}</p>
@@ -183,10 +184,11 @@
                         <p class="text-error text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-                
+
                 <!-- Remember Me -->
                 <div class="flex items-center">
-                    <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/30 bg-surface-container-lowest">
+                    <input id="remember" name="remember" type="checkbox"
+                        class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/30 bg-surface-container-lowest">
                     <label for="remember" class="ml-2 block font-body-sm text-on-surface-variant">
                         Recordarme
                     </label>

@@ -33,7 +33,8 @@
         color-scheme: dark;
     }
 
-    html, body {
+    html,
+    body {
         background: var(--ay-bg) !important;
     }
 
