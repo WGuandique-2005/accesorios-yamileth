@@ -37,7 +37,7 @@
                 dashboard</a>
         </div>
 
-        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <div class="rounded-xl bg-white p-5 shadow-sm">
                 <p class="text-sm text-gray-500">Ganancia actual</p>
                 <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentSummary['profit'], 2) }}</p>
@@ -59,6 +59,10 @@
                 <p class="mt-2 text-3xl font-bold {{ $delta >= 0 ? 'text-green-700' : 'text-red-700' }}">
                     {{ $delta >= 0 ? '+' : '' }}${{ number_format($delta, 2) }}
                 </p>
+            </div>
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+                <p class="text-sm text-gray-500">Descuento facturas</p>
+                <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentInvoiceDiscounts, 2) }}</p>
             </div>
         </section>
 

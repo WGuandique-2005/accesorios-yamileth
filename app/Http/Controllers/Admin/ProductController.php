@@ -34,8 +34,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatedData($request);
-        $data['descuento'] = $data['descuento'] ?? 0;
         $data['activo'] = $request->boolean('activo');
+        $data['descuento'] = 0;
 
         DB::transaction(function () use ($request, $data) {
             $product = Product::create($data);
@@ -67,7 +67,6 @@ class ProductController extends Controller
     {
         $product = Product::withTrashed()->with('productImages')->findOrFail($id);
         $data = $this->validatedData($request);
-        $data['descuento'] = $data['descuento'] ?? 0;
         $data['activo'] = $request->boolean('activo');
 
         DB::transaction(function () use ($request, $product, $data) {
@@ -105,7 +104,6 @@ class ProductController extends Controller
             'cantidad_stock' => ['required', 'integer', 'min:0'],
             'precio_unitario' => ['required', 'numeric', 'min:0'],
             'precio_inversion' => ['required', 'numeric', 'min:0'],
-            'descuento' => ['nullable', 'numeric', 'min:0', 'lte:precio_unitario'],
             'activo' => ['nullable', 'boolean'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'imagenes' => ['nullable', 'array'],

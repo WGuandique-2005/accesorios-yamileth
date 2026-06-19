@@ -23,6 +23,7 @@
             'entregado' => 'bg-green-100 text-green-800',
             'cancelado' => 'bg-red-100 text-red-800',
         ];
+        $lockedStates = ['entregado', 'cancelado'];
     @endphp
 
     <main class="min-h-screen p-4 md:ml-64 md:p-8">
@@ -91,12 +92,18 @@
                                     <td class="p-4">{{ $order->fecha->format('d/m/Y') }}</td>
                                     <td class="p-4">
                                         <select data-status-url="{{ route('admin.pedidos.estado', $order) }}"
+                                            data-order-id="{{ $order->id }}"
+                                            data-current-status="{{ $order->estado }}"
+                                            @disabled(in_array($order->estado, $lockedStates, true))
                                             class="status-select rounded-full border-0 px-3 py-1 text-xs font-bold {{ $badgeClasses[$order->estado] ?? 'bg-gray-100 text-gray-700' }}">
                                             @foreach ($statuses as $status)
                                                 <option value="{{ $status }}" @selected($order->estado === $status)>
                                                     {{ str_replace('_', ' ', ucfirst($status)) }}</option>
                                             @endforeach
                                         </select>
+                                        @if (in_array($order->estado, $lockedStates, true))
+                                            <p class="mt-2 text-xs text-gray-500">Este pedido ya no puede cambiar de estado.</p>
+                                        @endif
                                     </td>
                                     <td class="p-4 text-right"><a href="{{ route('admin.pedidos.show', $order) }}"
                                             class="font-semibold text-[#8A486F] hover:underline">Ver</a></td>
@@ -151,6 +158,30 @@
                                 class="text-green-700">${{ number_format($selectedOrder->ganancia_total, 2) }}</strong>
                         </div>
                     </div>
+
+                    @if ($selectedOrder->envio_o_entrega === 'Envío')
+                        @php $tracking = $selectedOrder->shipmentTracking; @endphp
+                        <div class="mt-5 rounded-lg border border-[#eadde3] p-4">
+                            <h3 class="font-bold text-[#8A486F]">Seguimiento de envío</h3>
+                            @if ($tracking)
+                                <div class="mt-3 space-y-1 text-sm text-gray-600">
+                                    <p><strong>Agencia:</strong> {{ $tracking->agencia }}</p>
+                                    <p><strong>Enviado:</strong> {{ $tracking->fecha_envio->format('d/m/Y') }}</p>
+                                    <p><strong>Límite retiro:</strong> {{ $tracking->fecha_limite_retiro->format('d/m/Y') }}</p>
+                                </div>
+                                <a href="{{ route('admin.envios.index', ['pedido' => $selectedOrder->id]) }}"
+                                    class="mt-3 inline-flex rounded-full bg-[#8A486F] px-4 py-2 text-sm font-bold text-white">
+                                    Ver seguimiento
+                                </a>
+                            @else
+                                <p class="mt-2 text-sm text-gray-600">Aún no se ha registrado el envío para este pedido.</p>
+                                <button type="button" data-shipment-modal-open
+                                    class="mt-3 rounded-full bg-[#8A486F] px-4 py-2 text-sm font-bold text-white">
+                                    Registrar envío
+                                </button>
+                            @endif
+                        </div>
+                    @endif
 
                     @if ($whatsappUrl)
                         <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer"
@@ -213,6 +244,63 @@
         </section>
     </main>
 
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4" data-status-modal>
+        <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between gap-3">
+                <h2 class="text-2xl font-bold text-[#8A486F]">Confirmar cambio de estado</h2>
+                <button type="button" data-status-modal-close class="text-gray-500 hover:text-[#8A486F]">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p class="mt-4 text-sm text-gray-600">
+                Esta acción cambia el estado del pedido a <strong data-status-modal-text></strong>.
+                Si confirmas <strong>entregado</strong> o <strong>cancelado</strong>, el pedido quedará bloqueado y ya no se podrá cambiar otra vez.
+            </p>
+            <div class="mt-6 flex gap-3">
+                <button type="button" data-status-modal-confirm
+                    class="rounded-full bg-[#8A486F] px-5 py-3 font-bold text-white">Confirmar</button>
+                <button type="button" data-status-modal-close
+                    class="rounded-full border border-gray-300 px-5 py-3 font-semibold text-gray-700">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    @if ($selectedOrder && $selectedOrder->envio_o_entrega === 'Envío' && ! $selectedOrder->shipmentTracking)
+        <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4" data-shipment-modal>
+            <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+                <div class="flex items-center justify-between gap-3">
+                    <h2 class="text-2xl font-bold text-[#8A486F]">Registrar envío</h2>
+                    <button type="button" data-shipment-modal-close class="text-gray-500 hover:text-[#8A486F]">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('admin.envios.store', $selectedOrder->id) }}" class="mt-5 space-y-4">
+                    @csrf
+                    <label class="block">
+                        <span class="mb-1 block text-sm font-semibold text-gray-700">Agencia</span>
+                        <input type="text" name="agencia" maxlength="255" required
+                            class="w-full rounded-lg border-gray-300" placeholder="Melo Express, Alcaldía, etc.">
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-sm font-semibold text-gray-700">Fecha de envío</span>
+                        <input type="date" name="fecha_envio" value="{{ now()->format('Y-m-d') }}" required
+                            class="w-full rounded-lg border-gray-300">
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-sm font-semibold text-gray-700">Notas</span>
+                        <textarea name="notas_envio" rows="4" class="w-full rounded-lg border-gray-300"
+                            placeholder="Observaciones del envío"></textarea>
+                    </label>
+                    <div class="flex gap-3">
+                        <button class="rounded-full bg-[#8A486F] px-5 py-3 font-bold text-white">Guardar</button>
+                        <button type="button" data-shipment-modal-close
+                            class="rounded-full border border-gray-300 px-5 py-3 font-semibold text-gray-700">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
     <script>
         const statusClasses = {
             pendiente: 'bg-yellow-100 text-yellow-800',
@@ -222,23 +310,124 @@
             cancelado: 'bg-red-100 text-red-800',
         };
 
+        const statusLabels = {
+            pendiente: 'Pendiente',
+            confirmado: 'Confirmado',
+            en_ruta: 'En ruta',
+            entregado: 'Entregado',
+            cancelado: 'Cancelado',
+        };
+
+        const statusModal = document.querySelector('[data-status-modal]');
+        const statusModalText = document.querySelector('[data-status-modal-text]');
+        const statusModalConfirm = document.querySelector('[data-status-modal-confirm]');
+        const statusModalCloseButtons = document.querySelectorAll('[data-status-modal-close]');
+        let pendingStatusAction = null;
+
+        const setStatusModal = (isOpen) => {
+            if (!statusModal) return;
+            statusModal.classList.toggle('hidden', !isOpen);
+            statusModal.classList.toggle('flex', isOpen);
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
+
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', async () => {
-                const response = await fetch(select.dataset.statusUrl, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ estado: select.value }),
-                });
-                const data = await response.json();
-                if (data.success) {
-                    select.className = 'status-select rounded-full border-0 px-3 py-1 text-xs font-bold ' + statusClasses[data.estado];
+                const currentStatus = select.dataset.currentStatus;
+                const nextStatus = select.value;
+
+                if (currentStatus === nextStatus) {
+                    return;
                 }
+
+                if (currentStatus === 'entregado' || currentStatus === 'cancelado') {
+                    select.value = currentStatus;
+                    return;
+                }
+
+                const sendStatusUpdate = async () => {
+                    const response = await fetch(select.dataset.statusUrl, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ estado: nextStatus }),
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        select.value = currentStatus;
+                        alert(data.message ?? 'No se pudo cambiar el estado del pedido.');
+                        return;
+                    }
+
+                    select.dataset.currentStatus = data.estado;
+                    select.className = 'status-select rounded-full border-0 px-3 py-1 text-xs font-bold ' + statusClasses[data.estado];
+                    select.value = data.estado;
+
+                    if (data.estado === 'entregado' || data.estado === 'cancelado') {
+                        select.disabled = true;
+                    }
+                };
+
+                if (nextStatus === 'entregado' || nextStatus === 'cancelado') {
+                    pendingStatusAction = sendStatusUpdate;
+                    if (statusModalText) {
+                        statusModalText.textContent = statusLabels[nextStatus] ?? nextStatus;
+                    }
+                    setStatusModal(true);
+                    select.value = currentStatus;
+                    return;
+                }
+
+                await sendStatusUpdate();
             });
         });
+
+        statusModalConfirm?.addEventListener('click', async () => {
+            const action = pendingStatusAction;
+            pendingStatusAction = null;
+            setStatusModal(false);
+            if (action) {
+                await action();
+            }
+        });
+
+        statusModalCloseButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                pendingStatusAction = null;
+                setStatusModal(false);
+            });
+        });
+
+        statusModal?.addEventListener('click', (event) => {
+            if (event.target === statusModal) {
+                pendingStatusAction = null;
+                setStatusModal(false);
+            }
+        });
+
+        const shipmentModal = document.querySelector('[data-shipment-modal]');
+        const shipmentModalOpen = document.querySelector('[data-shipment-modal-open]');
+        const shipmentModalCloseButtons = document.querySelectorAll('[data-shipment-modal-close]');
+
+        if (shipmentModal && shipmentModalOpen) {
+            const setShipmentModal = (isOpen) => {
+                shipmentModal.classList.toggle('hidden', !isOpen);
+                shipmentModal.classList.toggle('flex', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            };
+
+            shipmentModalOpen.addEventListener('click', () => setShipmentModal(true));
+            shipmentModalCloseButtons.forEach((button) => button.addEventListener('click', () => setShipmentModal(false)));
+            shipmentModal.addEventListener('click', (event) => {
+                if (event.target === shipmentModal) {
+                    setShipmentModal(false);
+                }
+            });
+        }
 
     </script>
 </body>

@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'orderItems.product'])->latest();
+        $query = Order::with(['user', 'orderItems.product', 'shipmentTracking'])->latest();
 
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
@@ -25,10 +25,10 @@ class OrderController extends Controller
 
     public function show(int $id)
     {
-        $orders = Order::with(['user', 'orderItems.product'])
+        $orders = Order::with(['user', 'orderItems.product', 'shipmentTracking'])
             ->latest()
             ->paginate(15);
-        $selectedOrder = Order::with(['user', 'orderItems.product'])->findOrFail($id);
+        $selectedOrder = Order::with(['user', 'orderItems.product', 'shipmentTracking'])->findOrFail($id);
 
         return view('admin.pedidos', compact('orders', 'selectedOrder'));
     }
@@ -40,6 +40,16 @@ class OrderController extends Controller
         ]);
 
         $order = Order::findOrFail($id);
+
+        if (in_array($order->estado, ['entregado', 'cancelado'], true) && $order->estado !== $validated['estado']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Este pedido ya quedó cerrado y no se puede cambiar de estado.',
+                'estado' => $order->estado,
+                'locked' => true,
+            ], 422);
+        }
+
         $order->update(['estado' => $validated['estado']]);
 
         return response()->json([

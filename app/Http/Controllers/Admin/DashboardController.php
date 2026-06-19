@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PurchaseInvoice;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -31,6 +32,8 @@ class DashboardController extends Controller
             ->latest()
             ->take(4)
             ->get();
+        $descuentos_facturas_mes = PurchaseInvoice::whereBetween('fecha_compra', [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
+            ->sum('descuento_temu');
 
         $balance_mes = OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -71,6 +74,7 @@ class DashboardController extends Controller
             'ventas_mes',
             'inversion_mes',
             'ganancias_mes',
+            'descuentos_facturas_mes',
             'ultimos_pedidos',
             'reseñas_recientes',
             'chartData',

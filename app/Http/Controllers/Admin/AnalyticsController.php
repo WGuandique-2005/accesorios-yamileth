@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PurchaseInvoice;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
@@ -42,6 +43,10 @@ class AnalyticsController extends Controller
 
         $currentSummary = $this->summaryForPeriod($currentMonthStart, $currentMonthEnd);
         $previousSummary = $this->summaryForPeriod($previousMonthStart, $previousMonthEnd);
+        $currentInvoiceDiscounts = PurchaseInvoice::whereBetween('fecha_compra', [$currentMonthStart->toDateString(), $currentMonthEnd->toDateString()])
+            ->sum('descuento_temu');
+        $previousInvoiceDiscounts = PurchaseInvoice::whereBetween('fecha_compra', [$previousMonthStart->toDateString(), $previousMonthEnd->toDateString()])
+            ->sum('descuento_temu');
 
         $topProduct = OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -68,6 +73,8 @@ class AnalyticsController extends Controller
             'monthlyProfitChart' => $monthlyProfitChart,
             'currentSummary' => $currentSummary,
             'previousSummary' => $previousSummary,
+            'currentInvoiceDiscounts' => $currentInvoiceDiscounts,
+            'previousInvoiceDiscounts' => $previousInvoiceDiscounts,
             'topProduct' => $topProduct,
             'topClient' => $topClient,
         ]);

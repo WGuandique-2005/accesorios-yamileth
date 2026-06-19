@@ -60,7 +60,7 @@
               @endforeach
         </section>
 
-         <section    class="mt-8 grid gap-4 sm:grid-cols-3">
+         <section    class="mt-8 grid gap-4 sm:grid-cols-4">
            <div  class="rounded-xl bg-white p-5 shadow-sm">
                 <p class="text-sm text-gray-500">Invertido este mes</p>
                 <p class="mt-2 text-2xl font-bold text-[#8A486F]">${{ number_format($inversion_mes, 2) }}</p>
@@ -74,6 +74,10 @@
                 <p class="text-sm text-gray-500">Balance real</p>
                 <p class="mt-2 text-2xl font-bold {{ $ganancias_mes >= 0 ? 'text-green-700' : 'text-red-700' }}">${{ number_format($ganancias_mes, 2) }}</p>
           </di  v>
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+                <p class="text-sm text-gray-500">Descuento facturas</p>
+                <p class="mt-2 text-2xl font-bold text-[#8A486F]">${{ number_format($descuentos_facturas_mes, 2) }}</p>
+            </div>
      </section>
    
     <section class="mt-8 grid gap-6 lg:grid-cols-[1fr_420px]">

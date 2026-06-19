@@ -38,6 +38,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function invoiceItems(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
@@ -58,7 +63,7 @@ class Product extends Model
     // Ganancia por unidad
     public function getGananciaUnitariaAttribute(): float
     {
-        return $this->precio_unitario - $this->precio_inversion - $this->descuento;
+        return $this->precio_unitario - $this->precio_inversion;
     }
 
     // Precio final después de descuento

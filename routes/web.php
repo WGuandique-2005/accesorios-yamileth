@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
+use App\Http\Controllers\Admin\ShipmentController as AdminShipmentController;
 
 // Public routes
 Route::get('/', [WelcomeController::class, 'index']);
@@ -60,4 +62,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/clientes', [AdminClientController::class, 'index'])->name('admin.clientes.index');
     Route::get('/admin/clientes/{id}', [AdminClientController::class, 'show'])->name('admin.clientes.show');
     Route::delete('/admin/clientes/{id}', [AdminClientController::class, 'destroy'])->name('admin.clientes.destroy');
+
+    Route::get('/admin/facturas', [AdminInvoiceController::class, 'index'])->name('admin.facturas.index');
+    Route::get('/admin/facturas/crear', [AdminInvoiceController::class, 'create'])->name('admin.facturas.create');
+    Route::post('/admin/facturas', [AdminInvoiceController::class, 'store'])->name('admin.facturas.store');
+    Route::get('/admin/facturas/{id}', [AdminInvoiceController::class, 'show'])->name('admin.facturas.show');
+    Route::delete('/admin/facturas/{id}', [AdminInvoiceController::class, 'destroy'])->name('admin.facturas.destroy');
+
+    Route::post('/admin/envios/{order_id}', [AdminShipmentController::class, 'store'])->name('admin.envios.store');
+    Route::get('/admin/envios', [AdminShipmentController::class, 'index'])->name('admin.envios.index');
+    Route::patch('/admin/envios/{id}', [AdminShipmentController::class, 'update'])->name('admin.envios.update');
 });

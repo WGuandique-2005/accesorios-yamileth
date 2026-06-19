@@ -67,21 +67,16 @@
                     <span class="text-sm font-semibold text-gray-700">Activo</span>
                 </label>
                 <label class="block">
-                    <span class="mb-1 block text-sm font-semibold text-gray-700">Precio inversión</span>
+                    <span class="mb-1 block text-sm font-semibold text-gray-700">Precio unitario</span>
                     <input type="number" step="0.01" name="precio_inversion"
                         value="{{ old('precio_inversion', $product?->precio_inversion ?? 0) }}" min="0" required
                         class="w-full rounded-lg border-gray-300">
+                    <p class="mt-1 text-xs text-gray-500">Se multiplica por el stock para calcular la inversión total.</p>
                 </label>
                 <label class="block">
                     <span class="mb-1 block text-sm font-semibold text-gray-700">Precio venta</span>
                     <input type="number" step="0.01" name="precio_unitario"
                         value="{{ old('precio_unitario', $product?->precio_unitario ?? 0) }}" min="0" required
-                        class="w-full rounded-lg border-gray-300">
-                </label>
-                <label class="block">
-                    <span class="mb-1 block text-sm font-semibold text-gray-700">Descuento</span>
-                    <input type="number" step="0.01" name="descuento"
-                        value="{{ old('descuento', $product?->descuento ?? 0) }}" min="0"
                         class="w-full rounded-lg border-gray-300">
                 </label>
                 <label class="block">
@@ -114,9 +109,8 @@
                             <th class="p-4">Imagen</th>
                             <th class="p-4">Nombre</th>
                             <th class="p-4">Stock</th>
-                            <th class="p-4">Inversión</th>
+                            <th class="p-4">Inversión total</th>
                             <th class="p-4">Venta</th>
-                            <th class="p-4">Desc.</th>
                             <th class="p-4">Fotos</th>
                             <th class="p-4">Ganancia</th>
                             <th class="p-4">Activo</th>
@@ -132,9 +126,8 @@
                                 <td class="p-4 font-semibold">{{ $item->nombre }} @if($item->trashed()) <span
                                 class="text-xs">(eliminado)</span> @endif</td>
                                 <td class="p-4">{{ $item->cantidad_stock }}</td>
-                                <td class="p-4">${{ number_format($item->precio_inversion, 2) }}</td>
+                                <td class="p-4">${{ number_format($item->valor_stock_inversion, 2) }}</td>
                                 <td class="p-4">${{ number_format($item->precio_unitario, 2) }}</td>
-                                <td class="p-4">${{ number_format($item->descuento, 2) }}</td>
                                 <td class="p-4">{{ $item->productImages->count() }}</td>
                                 <td
                                     class="p-4 font-bold {{ $item->ganancia_unitaria >= 0 ? 'text-green-700' : 'text-red-700' }}">
@@ -162,7 +155,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="p-8 text-center text-gray-500">No hay productos registrados.</td>
+                                <td colspan="9" class="p-8 text-center text-gray-500">No hay productos registrados.</td>
                             </tr>
                         @endforelse
                     </tbody>

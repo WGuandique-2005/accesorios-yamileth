@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -43,6 +45,49 @@ class Order extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shipmentTracking(): HasOne
+    {
+        return $this->hasOne(ShipmentTracking::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::updated(function (Order $order) {
+            if ($order->wasChanged('estado')) {
+                $order->syncShipmentTrackingForEstado();
+            }
+        });
+    }
+
+    public function syncShipmentTrackingForEstado(): void
+    {
+        DB::transaction(function () {
+            if ($this->estado === 'en_ruta') {
+                $this->shipmentTracking()->updateOrCreate(
+                    ['order_id' => $this->id],
+                    [
+                        'agencia' => $this->lugar_despacho ?: 'Sin agencia',
+                        'fecha_envio' => now()->toDateString(),
+                        'fecha_limite_retiro' => ShipmentTracking::calcularFechaLimiteRetiro(now()),
+                        'cliente_retiro' => false,
+                        'fecha_retiro_real' => null,
+                        'admin_cobro' => false,
+                        'fecha_cobro' => null,
+                    ]
+                );
+
+                return;
+            }
+
+            if ($this->estado === 'entregado' && $this->shipmentTracking) {
+                $this->shipmentTracking->update([
+                    'cliente_retiro' => true,
+                    'fecha_retiro_real' => $this->shipmentTracking->fecha_retiro_real ?? now()->toDateString(),
+                ]);
+            }
+        });
     }
 
     // ── Accessors ───────────────────────────────────────
