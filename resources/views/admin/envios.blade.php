@@ -56,6 +56,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($shipments as $shipment)
+                            @php $locked = $shipment->isLockedForUpdates(); @endphp
                             <tr>
                                 <td class="p-4 font-semibold text-[#8A486F]">
                                     #{{ $shipment->order_id }}
@@ -76,12 +77,14 @@
                                     <div class="flex flex-col gap-2">
                                         <input type="text" value="{{ $shipment->agencia }}"
                                             data-agency-input="{{ $shipment->id }}"
-                                            class="w-full rounded-lg border-gray-300 px-3 py-2 text-sm">
+                                            @disabled($locked)
+                                            class="w-full rounded-lg border-gray-300 px-3 py-2 text-sm {{ $locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                                         <button type="button" data-toggle-url="{{ route('admin.envios.update', $shipment) }}"
                                             data-field="agencia"
                                             data-id="{{ $shipment->id }}"
-                                            class="shipment-agency-save rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700">
-                                            Guardar agencia
+                                            @disabled($locked)
+                                            class="shipment-agency-save rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                            {{ $locked ? 'Bloqueado' : 'Guardar agencia' }}
                                         </button>
                                     </div>
                                 </td>
@@ -96,8 +99,9 @@
                                         data-field="cliente_retiro"
                                         data-next-value="{{ $shipment->cliente_retiro ? 'false' : 'true' }}"
                                         data-confirm-label="{{ $shipment->cliente_retiro ? 'quitar retiro' : 'marcar retiro' }}"
-                                        class="shipment-toggle mt-2 block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700">
-                                        {{ $shipment->cliente_retiro ? 'Quitar retiro' : 'Cliente retiró' }}
+                                        @disabled($locked)
+                                        class="shipment-toggle mt-2 block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                        {{ $locked ? 'Bloqueado' : ($shipment->cliente_retiro ? 'Quitar retiro' : 'Cliente retiró') }}
                                     </button>
                                 </td>
                                 <td class="p-4">
@@ -109,8 +113,9 @@
                                         data-field="admin_cobro"
                                         data-next-value="{{ $shipment->admin_cobro ? 'false' : 'true' }}"
                                         data-confirm-label="{{ $shipment->admin_cobro ? 'quitar cobro' : 'marcar cobro' }}"
-                                        class="shipment-toggle mt-2 block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700">
-                                        {{ $shipment->admin_cobro ? 'Quitar cobro' : 'Ya cobré' }}
+                                        @disabled($locked)
+                                        class="shipment-toggle mt-2 block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                        {{ $locked ? 'Bloqueado' : ($shipment->admin_cobro ? 'Quitar cobro' : 'Ya cobré') }}
                                     </button>
                                 </td>
                                 <td class="p-4">
@@ -166,6 +171,7 @@
 
         document.querySelectorAll('.shipment-toggle').forEach((button) => {
             button.addEventListener('click', async () => {
+                if (button.disabled) return;
                 const field = button.dataset.field;
                 const nextValue = button.dataset.nextValue === 'true';
                 const confirmLabel = button.dataset.confirmLabel || 'realizar este cambio';
@@ -240,6 +246,7 @@
 
         document.querySelectorAll('.shipment-agency-save').forEach((button) => {
             button.addEventListener('click', async () => {
+                if (button.disabled) return;
                 const id = button.dataset.id;
                 const input = document.querySelector(`[data-agency-input="${id}"]`);
                 const response = await fetch(button.dataset.toggleUrl, {

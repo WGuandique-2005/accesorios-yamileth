@@ -183,6 +183,10 @@
                         </div>
                     @endif
 
+                    @php
+                        $shipmentLocked = $selectedOrder->seguimientoBloqueado();
+                    @endphp
+
                     @if ($whatsappUrl)
                         <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer"
                             class="mt-4 flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 font-bold text-white hover:bg-[#20ba5a] transition-all">
@@ -191,6 +195,10 @@
                         <p class="mt-2 text-xs text-gray-500">
                             Se abrirá un mensaje al cliente con los datos del pedido y el recordatorio correspondiente.
                         </p>
+                    @elseif ($shipmentLocked)
+                        <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+                            Este pedido ya está cerrado. No se puede enviar recordatorio por WhatsApp ni modificar su envío.
+                        </div>
                     @elseif ($selectedOrder->estado === 'en_ruta' || $selectedOrder->fecha?->isToday())
                         <div class="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
                             No se puede generar el enlace porque el cliente no tiene número de contacto registrado.
@@ -209,7 +217,8 @@
                         <div class="grid gap-4 sm:grid-cols-2">
                             <label class="block sm:col-span-2">
                                 <span class="mb-1 block text-sm font-semibold text-gray-700">Método de envío</span>
-                                <select name="envio_o_entrega" class="w-full rounded-lg border-gray-300">
+                                <select name="envio_o_entrega" @disabled($shipmentLocked)
+                                    class="w-full rounded-lg border-gray-300 {{ $shipmentLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                                     <option value="Envío" @selected(old('envio_o_entrega', $selectedOrder->envio_o_entrega) === 'Envío')>Envío</option>
                                     <option value="Entrega" @selected(old('envio_o_entrega', $selectedOrder->envio_o_entrega) === 'Entrega')>Entrega</option>
                                 </select>
@@ -218,24 +227,30 @@
                                 <span class="mb-1 block text-sm font-semibold text-gray-700">Lugar de despacho</span>
                                 <input type="text" name="lugar_despacho"
                                     value="{{ old('lugar_despacho', $selectedOrder->lugar_despacho) }}" maxlength="100"
-                                    class="w-full rounded-lg border-gray-300" placeholder="Melo Express, sucursal, etc.">
+                                    @disabled($shipmentLocked)
+                                    class="w-full rounded-lg border-gray-300 {{ $shipmentLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}"
+                                    placeholder="Melo Express, sucursal, etc.">
                             </label>
                             <label class="block sm:col-span-2">
                                 <span class="mb-1 block text-sm font-semibold text-gray-700">Lugar donde se recibirá</span>
                                 <input type="text" name="lugar_de_recibir"
                                     value="{{ old('lugar_de_recibir', $selectedOrder->lugar_de_recibir) }}" maxlength="255"
-                                    required class="w-full rounded-lg border-gray-300"
+                                    required @disabled($shipmentLocked)
+                                    class="w-full rounded-lg border-gray-300 {{ $shipmentLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}"
                                     placeholder="Dirección, sucursal o punto de encuentro">
                             </label>
                             <label class="block">
                                 <span class="mb-1 block text-sm font-semibold text-gray-700">Cargo extra por envío</span>
                                 <input type="number" step="0.01" min="0" name="cargo_envio"
                                     value="{{ old('cargo_envio', $selectedOrder->cargo_envio) }}"
-                                    class="w-full rounded-lg border-gray-300">
+                                    @disabled($shipmentLocked)
+                                    class="w-full rounded-lg border-gray-300 {{ $shipmentLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                             </label>
                         </div>
-                        <button class="mt-4 rounded-full bg-[#8A486F] px-5 py-2 font-bold text-white">Guardar cambios de
-                            envío</button>
+                        <button @disabled($shipmentLocked)
+                            class="mt-4 rounded-full bg-[#8A486F] px-5 py-2 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">
+                            {{ $shipmentLocked ? 'Envío bloqueado' : 'Guardar cambios de envío' }}
+                        </button>
                     </form>
                 @else
                     <p class="text-gray-500">Selecciona un pedido para ver el detalle completo.</p>

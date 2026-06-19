@@ -42,6 +42,15 @@ class ShipmentTracking extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function isLockedForUpdates(): bool
+    {
+        if (in_array($this->order?->estado, ['entregado', 'cancelado'], true)) {
+            return true;
+        }
+
+        return $this->cliente_retiro && $this->admin_cobro;
+    }
+
     public function getEstadoBadgeAttribute(): array
     {
         if ($this->admin_cobro) {

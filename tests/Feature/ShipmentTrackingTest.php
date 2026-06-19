@@ -134,6 +134,17 @@ class ShipmentTrackingTest extends TestCase
         $tracking->refresh();
         $this->assertTrue($tracking->admin_cobro);
         $this->assertNotNull($tracking->fecha_cobro);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'cliente_retiro' => true,
+        ])->assertOk()->assertJsonPath('cliente_retiro', true);
+
+        $tracking->refresh();
+        $this->assertTrue($tracking->cliente_retiro);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'agencia' => 'Otro despacho',
+        ])->assertStatus(422)->assertJsonPath('locked', true);
     }
 
     public function test_pedido_entregado_o_cancelado_ya_no_puede_cambiar_de_estado(): void
@@ -175,5 +186,36 @@ class ShipmentTrackingTest extends TestCase
 
         $cancelledOrder->refresh();
         $this->assertSame('cancelado', $cancelledOrder->estado);
+    }
+
+    public function test_el_envio_ya_no_se_puede_modificar_cuando_el_pedido_esta_entregado(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $customer = User::factory()->create(['rol' => 'cliente']);
+        $order = Order::create([
+            'user_id' => $customer->id,
+            'envio_o_entrega' => 'Envío',
+            'lugar_despacho' => 'Melo Express',
+            'lugar_de_recibir' => 'Casa',
+            'fecha' => now()->toDateString(),
+            'precio_total' => 20,
+            'cargo_envio' => 0,
+            'estado' => 'entregado',
+        ]);
+
+        $tracking = ShipmentTracking::create([
+            'order_id' => $order->id,
+            'agencia' => 'Melo Express',
+            'fecha_envio' => now()->toDateString(),
+            'fecha_limite_retiro' => now()->toDateString(),
+        ]);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'agencia' => 'Otra agencia',
+        ])->assertStatus(422)->assertJsonPath('locked', true);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'cliente_retiro' => true,
+        ])->assertStatus(422)->assertJsonPath('locked', true);
     }
 }

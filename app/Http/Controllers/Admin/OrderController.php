@@ -60,6 +60,22 @@ class OrderController extends Controller
 
     public function updateEnvio(Request $request, int $id)
     {
+        $order = Order::with('shipmentTracking')->findOrFail($id);
+
+        if ($order->seguimientoBloqueado()) {
+            $message = 'Este pedido ya está cerrado y no se puede modificar el envío.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'locked' => true,
+                ], 422);
+            }
+
+            return back()->with('error', $message);
+        }
+
         $validated = $request->validate([
             'envio_o_entrega' => ['required', Rule::in(['Envío', 'Entrega'])],
             'lugar_despacho' => ['nullable', 'string', 'max:100'],
@@ -67,7 +83,6 @@ class OrderController extends Controller
             'cargo_envio' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $order = Order::findOrFail($id);
         $order->update([
             'envio_o_entrega' => $validated['envio_o_entrega'],
             'lugar_despacho' => $validated['lugar_despacho'] ?? null,

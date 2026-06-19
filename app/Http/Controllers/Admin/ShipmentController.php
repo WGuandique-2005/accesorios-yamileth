@@ -30,6 +30,10 @@ class ShipmentController extends Controller
             return back()->with('success', 'Ese pedido ya tiene seguimiento registrado.');
         }
 
+        if (in_array($order->estado, ['entregado', 'cancelado'], true)) {
+            return back()->with('error', 'Este pedido ya está cerrado y no se puede registrar un envío.');
+        }
+
         $data = $request->validate([
             'agencia' => ['required', 'string', 'max:255'],
             'fecha_envio' => ['required', 'date'],
@@ -49,7 +53,21 @@ class ShipmentController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $tracking = ShipmentTracking::findOrFail($id);
+        $tracking = ShipmentTracking::with('order')->findOrFail($id);
+
+        if ($tracking->isLockedForUpdates()) {
+            $message = 'Este envío ya está cerrado y no se puede modificar.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'locked' => true,
+                ], 422);
+            }
+
+            return back()->with('error', $message);
+        }
 
         $request->validate([
             'agencia' => ['nullable', 'string', 'max:255'],

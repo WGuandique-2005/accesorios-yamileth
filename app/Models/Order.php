@@ -114,6 +114,15 @@ class Order extends Model
         return (float) $this->precio_total + (float) $this->cargo_envio;
     }
 
+    public function seguimientoBloqueado(): bool
+    {
+        if (in_array($this->estado, ['entregado', 'cancelado'], true)) {
+            return true;
+        }
+
+        return (bool) ($this->shipmentTracking?->isLockedForUpdates() ?? false);
+    }
+
     public function clienteTelefonoNormalizado(): ?string
     {
         $telefono = preg_replace('/\D+/', '', (string) ($this->user?->numero_contacto ?? ''));
@@ -124,6 +133,7 @@ class Order extends Model
     public function puedeEnviarRecordatorioWhatsapp(): bool
     {
         return (bool) $this->clienteTelefonoNormalizado()
+            && ! $this->seguimientoBloqueado()
             && ($this->estado === 'en_ruta' || $this->fecha?->isToday());
     }
 
