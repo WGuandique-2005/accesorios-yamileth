@@ -18,7 +18,7 @@
     <main class="min-h-screen p-4 md:ml-64 md:p-8">
         <div class="mb-8">
             <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Registrar factura</h1>
-            <p class="mt-2 text-gray-600">Selecciona un producto para cargar sus datos y luego ajusta cantidad, precio y descuento Temu.</p>
+            <p class="mt-2 text-gray-600">Selecciona un producto para cargar sus datos y luego ajusta cantidad, precio total y descuento Temu.</p>
         </div>
 
         @if ($errors->any())
@@ -90,10 +90,10 @@
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id }}"
                                             data-product-name="{{ $product->nombre }}"
-                                            data-product-price="{{ $product->precio_inversion }}"
+                                            data-product-unit-price="{{ $product->precio_inversion }}"
                                             data-product-quantity="{{ $product->cantidad_stock }}"
                                             @selected((string) ($item['product_id'] ?? '') === (string) $product->id)>
-                                            {{ $product->nombre }} - ${{ number_format($product->precio_inversion, 2) }}
+                                            {{ $product->nombre }} - ${{ number_format($product->precio_inversion * $product->cantidad_stock, 2) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -113,9 +113,10 @@
                                     data-quantity-display>
                             </label>
                             <label class="block lg:col-span-2">
-                                <span class="mb-1 block text-sm font-semibold text-gray-700">Precio unitario</span>
-                                <input type="text" inputmode="decimal"
-                                    name="items[{{ $index }}][precio_unitario_temu]" data-product-price-input
+                                <span class="mb-1 block text-sm font-semibold text-gray-700">Precio total</span>
+                                <input type="hidden" name="items[{{ $index }}][precio_unitario_temu]"
+                                    value="{{ $item['precio_unitario_temu'] ?? '' }}" data-product-unit-price-input>
+                                <input type="text" inputmode="decimal" data-product-total-input
                                     value="{{ $item['precio_unitario_temu'] ?? '' }}" required
                                     class="w-full rounded-lg border-gray-300">
                             </label>
@@ -132,9 +133,9 @@
                                 @foreach ($products as $product)
                                     <option value="{{ $product->id }}"
                                         data-product-name="{{ $product->nombre }}"
-                                        data-product-price="{{ $product->precio_inversion }}"
+                                        data-product-unit-price="{{ $product->precio_inversion }}"
                                         data-product-quantity="{{ $product->cantidad_stock }}">
-                                        {{ $product->nombre }} - ${{ number_format($product->precio_inversion, 2) }}
+                                        {{ $product->nombre }} - ${{ number_format($product->precio_inversion * $product->cantidad_stock, 2) }}
                                     </option>
                                 @endforeach
                             </select>
@@ -152,8 +153,9 @@
                                 data-quantity-display>
                         </label>
                         <label class="block lg:col-span-2">
-                            <span class="mb-1 block text-sm font-semibold text-gray-700">Precio unitario</span>
-                            <input type="text" inputmode="decimal" data-name="precio_unitario_temu" data-product-price-input required
+                            <span class="mb-1 block text-sm font-semibold text-gray-700">Precio total</span>
+                            <input type="hidden" data-name="precio_unitario_temu" data-product-unit-price-input>
+                            <input type="text" inputmode="decimal" data-product-total-input required
                                 class="w-full rounded-lg border-gray-300">
                         </label>
                     </div>
@@ -183,49 +185,56 @@
         const syncEditableState = (row) => {
             const select = row.querySelector('[data-product-select]');
             const nameInput = row.querySelector('[data-product-name-input]');
-            const priceInput = row.querySelector('[data-product-price-input]');
+            const totalInput = row.querySelector('[data-product-total-input]');
+            const unitPriceInput = row.querySelector('[data-product-unit-price-input]');
             const quantityDisplay = row.querySelector('[data-quantity-display]');
             const quantityInput = row.querySelector('[data-quantity-input]');
 
-            if (!select || !nameInput || !priceInput || !quantityDisplay || !quantityInput) return;
+            if (!select || !nameInput || !totalInput || !unitPriceInput || !quantityDisplay || !quantityInput) return;
 
             const hasProduct = Boolean(select.value);
             nameInput.readOnly = hasProduct;
-            priceInput.readOnly = hasProduct;
+            totalInput.readOnly = hasProduct;
             nameInput.tabIndex = hasProduct ? -1 : 0;
-            priceInput.tabIndex = hasProduct ? -1 : 0;
+            totalInput.tabIndex = hasProduct ? -1 : 0;
             quantityDisplay.readOnly = true;
             quantityDisplay.tabIndex = -1;
             nameInput.classList.toggle('cursor-not-allowed', hasProduct);
-            priceInput.classList.toggle('cursor-not-allowed', hasProduct);
+            totalInput.classList.toggle('cursor-not-allowed', hasProduct);
             nameInput.classList.toggle('pointer-events-none', hasProduct);
-            priceInput.classList.toggle('pointer-events-none', hasProduct);
+            totalInput.classList.toggle('pointer-events-none', hasProduct);
             nameInput.classList.toggle('bg-gray-50', hasProduct);
-            priceInput.classList.toggle('bg-gray-50', hasProduct);
+            totalInput.classList.toggle('bg-gray-50', hasProduct);
             nameInput.classList.toggle('text-gray-500', hasProduct);
-            priceInput.classList.toggle('text-gray-500', hasProduct);
+            totalInput.classList.toggle('text-gray-500', hasProduct);
             quantityDisplay.classList.add('bg-gray-50', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
         };
 
         const syncRowFromProduct = (row) => {
             const select = row.querySelector('[data-product-select]');
             const nameInput = row.querySelector('[data-product-name-input]');
-            const priceInput = row.querySelector('[data-product-price-input]');
+            const totalInput = row.querySelector('[data-product-total-input]');
+            const unitPriceInput = row.querySelector('[data-product-unit-price-input]');
             const quantityInput = row.querySelector('[data-quantity-input]');
             const quantityDisplay = row.querySelector('[data-quantity-display]');
 
-            if (!select || !nameInput || !priceInput || !quantityInput || !quantityDisplay) return;
+            if (!select || !nameInput || !totalInput || !unitPriceInput || !quantityInput || !quantityDisplay) return;
 
             const option = select.selectedOptions[0];
             if (!option || !option.value) {
                 nameInput.readOnly = false;
-                priceInput.readOnly = false;
+                totalInput.readOnly = false;
                 syncEditableState(row);
+                unitPriceInput.value = totalInput.value ? (parseFloat(totalInput.value) / Math.max(parseInt(quantityInput.value || '1', 10), 1)).toFixed(2) : '';
                 return;
             }
 
             nameInput.value = option.dataset.productName || nameInput.value;
-            priceInput.value = option.dataset.productPrice || priceInput.value;
+            const quantity = parseInt(option.dataset.productQuantity || quantityInput.value || '1', 10) || 1;
+            const unitPrice = parseFloat(option.dataset.productUnitPrice || '0') || 0;
+            const totalPrice = (unitPrice * quantity).toFixed(2);
+            unitPriceInput.value = unitPrice.toFixed(2);
+            totalInput.value = totalPrice;
             quantityInput.value = option.dataset.productQuantity || quantityInput.value || '1';
             quantityDisplay.value = quantityInput.value;
             syncEditableState(row);
@@ -266,6 +275,7 @@
 
         itemsList.querySelectorAll('.item-row').forEach((row) => {
             const select = row.querySelector('[data-product-select]');
+            const totalInput = row.querySelector('[data-product-total-input]');
             if (select) {
                 select.addEventListener('change', () => {
                     const selectedId = select.value;
@@ -280,6 +290,16 @@
                     refreshProductOptions();
                 });
                 syncRowFromProduct(row);
+            }
+            if (totalInput) {
+                totalInput.addEventListener('input', () => {
+                    const quantityInput = row.querySelector('[data-quantity-input]');
+                    const unitPriceInput = row.querySelector('[data-product-unit-price-input]');
+                    const quantity = Math.max(parseInt(quantityInput?.value || '1', 10), 1);
+                    const totalValue = parseFloat(totalInput.value);
+
+                    unitPriceInput.value = Number.isFinite(totalValue) ? (totalValue / quantity).toFixed(2) : '';
+                });
             }
         });
 
@@ -305,6 +325,17 @@
 
                     syncRowFromProduct(row);
                     refreshProductOptions();
+                });
+            }
+            const totalInput = row.querySelector('[data-product-total-input]');
+            if (totalInput) {
+                totalInput.addEventListener('input', () => {
+                    const quantityInput = row.querySelector('[data-quantity-input]');
+                    const unitPriceInput = row.querySelector('[data-product-unit-price-input]');
+                    const quantity = Math.max(parseInt(quantityInput?.value || '1', 10), 1);
+                    const totalValue = parseFloat(totalInput.value);
+
+                    unitPriceInput.value = Number.isFinite(totalValue) ? (totalValue / quantity).toFixed(2) : '';
                 });
             }
             itemsList.appendChild(fragment);

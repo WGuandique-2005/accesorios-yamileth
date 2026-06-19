@@ -48,7 +48,7 @@ class InvoiceDiscountTest extends TestCase
         $invoice = PurchaseInvoice::first();
         $this->assertNotNull($invoice);
         $this->assertSame('6.00', (string) $invoice->descuento_temu);
-        $this->assertSame('6.00', (string) $invoice->descuento_por_producto);
+        $this->assertSame('3.00', (string) $invoice->descuento_por_producto);
 
         $item = InvoiceItem::first();
         $this->assertNotNull($item);
@@ -173,5 +173,52 @@ class InvoiceDiscountTest extends TestCase
         $response->assertOk();
         $response->assertSee('Total después del descuento', false);
         $response->assertSee('$80.00', false);
+    }
+
+    public function test_la_factura_muestra_la_cantidad_total_de_productos(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $invoice = PurchaseInvoice::create([
+            'numero_factura' => 'F-105',
+            'fecha_compra' => now()->toDateString(),
+            'total_inversion' => 90,
+            'descuento_temu' => 9,
+            'descuento_por_producto' => 3,
+        ]);
+
+        InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'product_id' => null,
+            'nombre_producto' => 'Lote',
+            'cantidad' => 3,
+            'precio_unitario_temu' => 30,
+            'subtotal' => 90,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.facturas.show', $invoice->id));
+
+        $response->assertOk();
+        $response->assertSee('Cantidad total', false);
+        $response->assertSee('3', false);
+    }
+
+    public function test_el_formulario_de_factura_muestra_precio_total_por_producto(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        Product::create([
+            'nombre' => 'Producto total',
+            'cantidad_stock' => 4,
+            'precio_unitario' => 20,
+            'precio_inversion' => 7.5,
+            'descuento' => 0,
+            'activo' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.facturas.create'));
+
+        $response->assertOk();
+        $response->assertSee('Precio total', false);
+        $response->assertSee('Producto total - $30.00', false);
+        $response->assertDontSee('Precio unitario', false);
     }
 }

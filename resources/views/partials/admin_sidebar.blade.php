@@ -1,13 +1,13 @@
 @php
     $adminLinks = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'admin.dashboard'],
-        ['label' => 'Reseñas', 'icon' => 'star_rate', 'route' => 'admin.resenas.index'],
-        ['label' => 'Analítica', 'icon' => 'query_stats', 'route' => 'admin.analitica'],
         ['label' => 'Inventario', 'icon' => 'inventory_2', 'route' => 'admin.inventario.index'],
-        ['label' => 'Pedidos', 'icon' => 'shopping_bag', 'route' => 'admin.pedidos.index'],
         ['label' => 'Facturas', 'icon' => 'receipt_long', 'route' => 'admin.facturas.index'],
+        ['label' => 'Pedidos', 'icon' => 'shopping_bag', 'route' => 'admin.pedidos.index'],
         ['label' => 'Envíos', 'icon' => 'local_shipping', 'route' => 'admin.envios.index'],
         ['label' => 'Clientes', 'icon' => 'group', 'route' => 'admin.clientes.index'],
+        ['label' => 'Reseñas', 'icon' => 'star_rate', 'route' => 'admin.resenas.index'],
+        ['label' => 'Analítica', 'icon' => 'query_stats', 'route' => 'admin.analitica'],
     ];
 @endphp
 

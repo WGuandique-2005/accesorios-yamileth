@@ -33,4 +33,13 @@ class PurchaseInvoice extends Model
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');
     }
+
+    public function getCantidadTotalAttribute(): int
+    {
+        if ($this->relationLoaded('items')) {
+            return (int) $this->items->sum('cantidad');
+        }
+
+        return (int) $this->items()->sum('cantidad');
+    }
 }

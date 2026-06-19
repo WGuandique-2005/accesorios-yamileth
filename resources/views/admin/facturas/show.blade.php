@@ -97,8 +97,8 @@
                         <strong>${{ number_format($invoice->descuento_por_producto, 2) }}</strong>
                     </div>
                     <div class="flex justify-between gap-4">
-                        <span>N° productos</span>
-                        <strong>{{ $invoice->items->count() }}</strong>
+                        <span>Cantidad total</span>
+                        <strong>{{ $invoice->cantidad_total }}</strong>
                     </div>
                 </div>
 

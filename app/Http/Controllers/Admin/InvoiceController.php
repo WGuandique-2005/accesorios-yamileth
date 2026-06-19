@@ -66,8 +66,9 @@ class InvoiceController extends Controller
 
         $items = collect($data['items'])->values();
         $totalInversion = round($items->sum(fn (array $item) => (float) $item['cantidad'] * (float) $item['precio_unitario_temu']), 2);
-        $descuentoPorProducto = $items->count() > 0
-            ? round((float) $data['descuento_temu'] / $items->count(), 2)
+        $totalCantidad = (int) $items->sum('cantidad');
+        $descuentoPorProducto = $totalCantidad > 0
+            ? round((float) $data['descuento_temu'] / $totalCantidad, 2)
             : 0;
 
         DB::transaction(function () use ($data, $items, $totalInversion, $descuentoPorProducto) {
@@ -91,7 +92,7 @@ class InvoiceController extends Controller
                 }
 
                 $subtotal = round((float) $item['cantidad'] * (float) $item['precio_unitario_temu'], 2);
-                $costoUnitarioEfectivo = round(($subtotal - $descuentoPorProducto) / (int) $item['cantidad'], 2);
+                $costoUnitarioEfectivo = round((float) $item['precio_unitario_temu'] - $descuentoPorProducto, 2);
 
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
