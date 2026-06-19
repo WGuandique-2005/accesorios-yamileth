@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -39,23 +41,51 @@ class OrderController extends Controller
             'estado' => ['required', Rule::in(['pendiente', 'confirmado', 'en_ruta', 'entregado', 'cancelado'])],
         ]);
 
-        $order = Order::findOrFail($id);
+        return DB::transaction(function () use ($id, $validated) {
+            $order = Order::with('orderItems')->lockForUpdate()->findOrFail($id);
 
-        if (in_array($order->estado, ['entregado', 'cancelado'], true) && $order->estado !== $validated['estado']) {
+            if (in_array($order->estado, ['entregado', 'cancelado'], true) && $order->estado !== $validated['estado']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este pedido ya quedó cerrado y no se puede cambiar de estado.',
+                    'estado' => $order->estado,
+                    'locked' => true,
+                ], 422);
+            }
+
+            $previousEstado = $order->estado;
+
+            $order->update(['estado' => $validated['estado']]);
+
+            if ($validated['estado'] === 'cancelado' && $previousEstado !== 'cancelado') {
+                $itemsPorProducto = $order->orderItems
+                    ->groupBy('product_id')
+                    ->map(fn ($items) => (int) $items->sum('cantidad'));
+
+                if ($itemsPorProducto->isNotEmpty()) {
+                    $products = Product::withTrashed()
+                        ->whereIn('id', $itemsPorProducto->keys())
+                        ->lockForUpdate()
+                        ->get()
+                        ->keyBy('id');
+
+                    foreach ($itemsPorProducto as $productId => $cantidad) {
+                        $product = $products->get($productId);
+
+                        if (! $product) {
+                            continue;
+                        }
+
+                        $product->increment('cantidad_stock', $cantidad);
+                    }
+                }
+            }
+
             return response()->json([
-                'success' => false,
-                'message' => 'Este pedido ya quedó cerrado y no se puede cambiar de estado.',
+                'success' => true,
                 'estado' => $order->estado,
-                'locked' => true,
-            ], 422);
-        }
-
-        $order->update(['estado' => $validated['estado']]);
-
-        return response()->json([
-            'success' => true,
-            'estado' => $order->estado,
-        ]);
+            ]);
+        });
     }
 
     public function updateEnvio(Request $request, int $id)

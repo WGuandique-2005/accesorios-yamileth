@@ -233,7 +233,7 @@
                         <label class="block font-label-caps text-label-caps text-on-surface-variant"
                             for="password">Contraseña</label>
                         <a class="font-body-sm text-body-sm text-primary hover:text-primary-fixed-variant transition-colors"
-                            href="#">¿Olvidaste tu contraseña?</a>
+                            href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="relative">
                         <span
