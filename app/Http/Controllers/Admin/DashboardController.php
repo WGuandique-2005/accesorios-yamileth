@@ -17,17 +17,11 @@ class DashboardController extends Controller
     {
         $startOfMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
-        $lowStockThreshold = 5;
 
         $total_pedidos_hoy = Order::whereDate('created_at', today())->count();
         $pedidos_pendientes = Order::where('estado', 'pendiente')->count();
         $total_productos = Product::count();
         $productos_sin_stock = Product::where('cantidad_stock', 0)->count();
-        $productos_bajo_stock = Product::where('cantidad_stock', '>', 0)
-            ->where('cantidad_stock', '<', $lowStockThreshold)
-            ->orderBy('cantidad_stock')
-            ->take(6)
-            ->get();
         $reseñas_recientes = Review::with(['user', 'product'])
             ->latest()
             ->take(4)
@@ -69,8 +63,6 @@ class DashboardController extends Controller
             'pedidos_pendientes',
             'total_productos',
             'productos_sin_stock',
-            'productos_bajo_stock',
-            'lowStockThreshold',
             'ventas_mes',
             'inversion_mes',
             'ganancias_mes',

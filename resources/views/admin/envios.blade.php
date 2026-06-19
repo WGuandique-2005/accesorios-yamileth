@@ -15,7 +15,8 @@
 <body class="bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
     @include('partials.admin_sidebar')
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Seguimiento de envíos</h1>
@@ -37,7 +38,7 @@
             <div class="mb-5 rounded-lg bg-green-50 px-4 py-3 text-green-700">{{ session('success') }}</div>
         @endif
 
-        <section class="overflow-hidden rounded-xl bg-white shadow-sm">
+        <section class="admin-table-shell">
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[1100px] text-left text-sm">
                     <thead class="bg-[#FDF0F4] text-gray-600">
@@ -133,6 +134,7 @@
             </div>
             <div class="border-t p-4">{{ $shipments->links() }}</div>
         </section>
+        </div>
     </main>
 
     <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4" data-shipment-confirm-modal>

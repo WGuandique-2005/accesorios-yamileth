@@ -218,7 +218,27 @@ class InvoiceDiscountTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Precio total', false);
-        $response->assertSee('Producto total - $30.00', false);
+        $response->assertSee('Producto total - $7.50', false);
+        $response->assertSee('data-product-quantity="4"', false);
         $response->assertDontSee('Precio unitario', false);
+    }
+
+    public function test_la_lista_de_facturas_muestra_el_total_neto_con_descuentos_incluidos(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
+        PurchaseInvoice::create([
+            'numero_factura' => 'F-200',
+            'fecha_compra' => now()->toDateString(),
+            'total_inversion' => 120,
+            'descuento_temu' => 15,
+            'descuento_por_producto' => 5,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.facturas.index'));
+
+        $response->assertOk();
+        $response->assertSee('Total neto', false);
+        $response->assertSee('$105.00', false);
     }
 }

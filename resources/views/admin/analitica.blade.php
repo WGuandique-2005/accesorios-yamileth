@@ -25,7 +25,8 @@
         ];
     @endphp
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Analítica del negocio</h1>
@@ -37,21 +38,21 @@
                 dashboard</a>
         </div>
 
-        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <div class="rounded-xl bg-white p-5 shadow-sm">
+        <section class="admin-mobile-stack cols-5">
+            <div class="admin-card p-5">
                 <p class="text-sm text-gray-500">Ganancia actual</p>
                 <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentSummary['profit'], 2) }}</p>
             </div>
-            <div class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="admin-card p-5">
                 <p class="text-sm text-gray-500">Inversión actual</p>
                 <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentSummary['cost'], 2) }}</p>
             </div>
-            <div class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="admin-card p-5">
                 <p class="text-sm text-gray-500">Ventas actuales</p>
                 <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentSummary['revenue'], 2) }}
                 </p>
             </div>
-            <div class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="admin-card p-5">
                 <p class="text-sm text-gray-500">Comparativa mes anterior</p>
                 @php
                     $delta = $currentSummary['profit'] - $previousSummary['profit'];
@@ -60,14 +61,14 @@
                     {{ $delta >= 0 ? '+' : '' }}${{ number_format($delta, 2) }}
                 </p>
             </div>
-            <div class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="admin-card p-5">
                 <p class="text-sm text-gray-500">Descuento facturas</p>
                 <p class="mt-2 text-3xl font-bold text-[#8A486F]">${{ number_format($currentInvoiceDiscounts, 2) }}</p>
             </div>
         </section>
 
         <section class="mt-8 grid gap-6 xl:grid-cols-2">
-            <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="admin-card p-6">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-xl font-bold text-[#8A486F]">Ganancias por semana</h2>
                     <span class="text-sm text-gray-500">Últimas 8 semanas</span>
@@ -89,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="admin-card p-6">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-xl font-bold text-[#8A486F]">Ganancias por mes</h2>
                     <span class="text-sm text-gray-500">Últimos 6 meses</span>
@@ -113,7 +114,7 @@
         </section>
 
         <section class="mt-8 grid gap-6 lg:grid-cols-2">
-            <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="admin-card p-6">
                 <h2 class="text-xl font-bold text-[#8A486F]">Producto más vendido</h2>
                 @if ($topProduct)
                     <div class="mt-4 rounded-lg bg-[#FDF0F4] p-5">
@@ -125,7 +126,7 @@
                 @endif
             </div>
 
-            <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="admin-card p-6">
                 <h2 class="text-xl font-bold text-[#8A486F]">Cliente que más compra</h2>
                 @if ($topClient)
                     <div class="mt-4 rounded-lg bg-[#FDF0F4] p-5">
@@ -139,7 +140,7 @@
             </div>
         </section>
 
-        <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+        <section class="admin-card mt-8 p-6">
             <h2 class="text-xl font-bold text-[#8A486F]">Comparativa con el mes anterior</h2>
             <div class="mt-5 overflow-x-auto">
                 <table class="w-full min-w-[640px] text-left">
@@ -169,6 +170,7 @@
                 </table>
             </div>
         </section>
+        </div>
     </main>
 </body>
 

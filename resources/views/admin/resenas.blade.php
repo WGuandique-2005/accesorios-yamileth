@@ -15,7 +15,8 @@
 <body class="bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
     @include('partials.admin_sidebar')
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Reseñas</h1>
@@ -28,7 +29,7 @@
         </div>
 
         <form method="GET" action="{{ route('admin.resenas.index') }}"
-            class="mb-6 grid gap-4 rounded-xl bg-white p-5 shadow-sm md:grid-cols-3">
+            class="admin-card mb-6 grid gap-4 p-5 md:grid-cols-3">
             <label class="block">
                 <span class="mb-1 block text-sm font-semibold text-gray-700">Filtrar por estrellas</span>
                 <select name="rating" class="w-full rounded-lg border-gray-300">
@@ -57,7 +58,7 @@
 
         <section class="space-y-4">
             @forelse ($reviews as $review)
-                <article class="rounded-xl bg-white p-5 shadow-sm">
+                <article class="admin-card p-5">
                     <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                         <div>
                             <div class="flex flex-wrap items-center gap-3">
@@ -83,7 +84,7 @@
                     @endif
                 </article>
             @empty
-                <div class="rounded-xl bg-white p-12 text-center shadow-sm">
+                <div class="admin-card p-12 text-center">
                     <p class="text-2xl font-bold text-[#8A486F]">Todavía no hay reseñas registradas.</p>
                 </div>
             @endforelse
@@ -91,6 +92,7 @@
 
         <div class="mt-6">
             {{ $reviews->links() }}
+        </div>
         </div>
     </main>
 </body>

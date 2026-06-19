@@ -15,7 +15,8 @@
 <body class="bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
     @include('partials.admin_sidebar')
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">
@@ -30,7 +31,7 @@
         </div>
 
         <section class="grid gap-6 xl:grid-cols-[1fr_320px]">
-            <div class="overflow-hidden rounded-xl bg-white shadow-sm">
+            <div class="admin-table-shell">
                 <div class="border-b border-gray-100 p-6">
                     <div class="grid gap-4 md:grid-cols-3">
                         <div>
@@ -77,7 +78,7 @@
                 </div>
             </div>
 
-            <aside class="h-fit rounded-xl bg-white p-6 shadow-sm">
+            <aside class="admin-card h-fit p-6">
                 <h2 class="text-xl font-bold text-[#8A486F]">Resumen</h2>
                 <div class="mt-4 space-y-3 text-sm">
                     <div class="flex justify-between gap-4">
@@ -110,6 +111,7 @@
                 @endif
             </aside>
         </section>
+        </div>
     </main>
 </body>
 

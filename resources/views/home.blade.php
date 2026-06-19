@@ -119,11 +119,60 @@
     class="bg-background text-on-background min-h-screen flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
     <!-- TopNavBar -->
     @include('partials.navbar')
+
+    @php
+        $hasMobileFilters = collect($filters ?? [])->filter(fn ($value) => filled($value))->isNotEmpty();
+    @endphp
     <!-- Main Content -->
     <main
-        class="flex-1 flex flex-col md:flex-row max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 gap-gutter">
+        class="flex-1 flex flex-col lg:flex-row max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 gap-gutter">
+        <details class="lg:hidden rounded-xl bg-surface p-4 shadow-[0_8px_30px_rgb(138,72,111,0.08)]" @if($hasMobileFilters) open @endif>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg text-sm font-semibold text-on-surface">
+                <span class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px] text-primary">tune</span>
+                    Buscar y ordenar
+                </span>
+                <span class="material-symbols-outlined text-[20px] text-primary">expand_more</span>
+            </summary>
+            <div class="mt-4">
+                <form method="GET" action="{{ route('home') }}" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface mb-2" for="q-mobile">Buscar producto</label>
+                        <input id="q-mobile" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre del producto"
+                            class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface mb-2">Rango de precio</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input name="min_price" value="{{ $filters['min_price'] ?? '' }}" placeholder="Mín."
+                                type="number" step="0.01" min="0"
+                                class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                            <input name="max_price" value="{{ $filters['max_price'] ?? '' }}" placeholder="Máx."
+                                type="number" step="0.01" min="0"
+                                class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface mb-2" for="sort-mobile">Ordenar por</label>
+                        <select id="sort-mobile" name="sort"
+                            class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-md text-body-sm focus:outline-none focus:border-primary text-on-surface">
+                            <option value="">Más nuevo</option>
+                            <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Precio menor</option>
+                            <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Precio mayor</option>
+                            <option value="newest" @selected(($filters['sort'] ?? '') === 'newest')>Más nuevo</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                            class="flex-1 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary">Buscar</button>
+                        <a href="{{ route('home') }}"
+                            class="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface">Limpiar</a>
+                    </div>
+                </form>
+            </div>
+        </details>
         <!-- Sidebar Filters -->
-        <aside class="w-full md:w-64 flex-shrink-0 space-y-8">
+        <aside class="hidden w-full flex-shrink-0 space-y-8 lg:block lg:w-64">
             <form method="GET" action="{{ route('home') }}"
                 class="rounded-xl bg-surface p-4 shadow-[0_8px_30px_rgb(138,72,111,0.08)] space-y-4">
                 <div>
@@ -161,64 +210,17 @@
                         class="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface">Limpiar</a>
                 </div>
             </form>
-            <div>
-                <h3 class="font-h3 text-h3 text-primary mb-4">Categorías</h3>
-                <ul class="space-y-3">
-                    <li>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input checked=""
-                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
-                                type="checkbox" />
-                            <span class="text-body-md text-on-surface group-hover:text-primary transition-colors">Todos
-                                los productos</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input
-                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
-                                type="checkbox" />
-                            <span
-                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Collares</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input
-                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
-                                type="checkbox" />
-                            <span
-                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Aretes</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input
-                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
-                                type="checkbox" />
-                            <span
-                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Pulseras</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input
-                                class="form-checkbox text-primary border-outline-variant rounded focus:ring-primary h-5 w-5"
-                                type="checkbox" />
-                            <span
-                                class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Anillos</span>
-                        </label>
-                    </li>
-                </ul>
-            </div>
         </aside>
         <!-- Product Grid -->
         <section class="flex-1">
             <div class="mb-6">
                 <h1 class="font-h2 text-h2 text-primary tracking-tight mb-2">Bienvenida, {{ Auth::user()->name }}</h1>
             </div>
-            <div class="flex justify-between items-center mb-6">
+            <div class="mb-6 flex items-center justify-between gap-3">
                 <span class="text-body-sm text-on-surface-variant">Mostrando {{ $products->count() }} productos</span>
+                <span class="rounded-full border border-outline-variant bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant lg:hidden">
+                    Búsqueda en desktop
+                </span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse ($products as $product)

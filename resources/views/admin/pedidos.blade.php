@@ -26,7 +26,8 @@
         $lockedStates = ['entregado', 'cancelado'];
     @endphp
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8">
             <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Pedidos</h1>
             <p class="mt-2 text-gray-600">Consulta y actualiza el estado de los encargos.</p>
@@ -55,7 +56,7 @@
         </div>
 
         <section class="grid gap-6 xl:grid-cols-[1fr_420px]">
-            <div class="overflow-hidden rounded-xl bg-white shadow-sm">
+            <div class="admin-table-shell">
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-[980px] text-left text-sm">
                         <thead class="bg-[#FDF0F4] text-gray-600">
@@ -119,7 +120,7 @@
                 <div class="border-t p-4">{{ $orders->links() }}</div>
             </div>
 
-            <aside class="h-fit rounded-xl bg-white p-6 shadow-sm">
+            <aside class="admin-card h-fit p-6">
                 @if ($selectedOrder)
                     @php
                         $whatsappUrl = $selectedOrder->whatsappRecordatorioUrl();
@@ -257,6 +258,7 @@
                 @endif
             </aside>
         </section>
+        </div>
     </main>
 
     <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4" data-status-modal>

@@ -42,4 +42,9 @@ class PurchaseInvoice extends Model
 
         return (int) $this->items()->sum('cantidad');
     }
+
+    public function getTotalNetoAttribute(): string
+    {
+        return number_format(((float) $this->total_inversion) - ((float) $this->descuento_temu), 2, '.', '');
+    }
 }

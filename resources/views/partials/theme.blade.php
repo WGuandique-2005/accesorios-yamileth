@@ -199,6 +199,90 @@
         font-size: 18px;
         line-height: 1;
     }
+
+    .admin-main {
+        min-height: 100vh;
+        padding: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .admin-main {
+            margin-left: 16rem;
+            padding: 2rem;
+        }
+    }
+
+    .admin-page {
+        margin: 0 auto;
+        display: flex;
+        max-width: 96rem;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .admin-hero {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    @media (min-width: 1024px) {
+        .admin-hero {
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+    }
+
+    .admin-card {
+        border: 1px solid var(--ay-border);
+        border-radius: 1.25rem;
+        background: var(--ay-surface);
+        box-shadow: var(--ay-shadow);
+    }
+
+    .admin-card-soft {
+        border: 1px solid var(--ay-border);
+        border-radius: 1.25rem;
+        background: var(--ay-surface-soft);
+    }
+
+    .admin-table-shell {
+        overflow: hidden;
+        border: 1px solid var(--ay-border);
+        border-radius: 1.25rem;
+        background: var(--ay-surface);
+        box-shadow: var(--ay-shadow);
+    }
+
+    .admin-scroll {
+        overflow-x: auto;
+    }
+
+    .admin-mobile-stack {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .admin-mobile-stack {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .admin-mobile-stack.cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .admin-mobile-stack.cols-5 {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+
+        .admin-mobile-stack.cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
 </style>
 
 <script>

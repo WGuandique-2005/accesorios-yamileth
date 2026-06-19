@@ -15,7 +15,8 @@
 <body class="bg-[#FFF8F8] text-[#201A1D]" style="font-family: Inter, sans-serif;">
     @include('partials.admin_sidebar')
 
-    <main class="min-h-screen p-4 md:ml-64 md:p-8">
+    <main class="admin-main">
+        <div class="admin-page">
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">Inventario</h1>
@@ -34,16 +35,16 @@
             </div>
         @endif
 
-        <section class="mb-6 grid gap-4 sm:grid-cols-4">
+        <section class="admin-mobile-stack cols-4 mb-6">
             @foreach ([['Total', $stats['total']], ['Activos', $stats['active']], ['Sin stock', $stats['no_stock']], ['Papelera', $stats['trashed']]] as [$label, $value])
-                <div class="rounded-xl bg-white p-5 shadow-sm">
+                <div class="admin-card p-5">
                     <p class="text-sm text-gray-500">{{ $label }}</p>
                     <p class="text-2xl font-bold text-[#8A486F]">{{ $value }}</p>
                 </div>
             @endforeach
         </section>
 
-        <section id="product-form" class="mb-8 rounded-xl bg-white p-6 shadow-sm">
+        <section id="product-form" class="admin-card mb-8 p-6">
             <h2 class="mb-5 text-xl font-bold text-[#8A486F]">{{ $product ? 'Editar producto' : 'Crear producto' }}</h2>
             <form method="POST"
                 action="{{ $product ? route('admin.inventario.update', $product) : route('admin.inventario.store') }}"
@@ -101,7 +102,7 @@
             </form>
         </section>
 
-        <section class="overflow-hidden rounded-xl bg-white shadow-sm">
+        <section class="admin-table-shell">
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[1000px] text-left text-sm">
                     <thead class="bg-[#FDF0F4] text-gray-600">
@@ -162,6 +163,7 @@
                 </table>
             </div>
         </section>
+        </div>
     </main>
 
     <script>
