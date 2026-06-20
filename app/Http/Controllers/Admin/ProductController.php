@@ -12,7 +12,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::withTrashed()->with('productImages')->latest()->get();
+        $products = Product::withTrashed()->with(['productImages', 'batches.invoiceItem.invoice'])->latest()->get();
 
         return view('admin.inventario', [
             'products' => $products,
@@ -36,9 +36,14 @@ class ProductController extends Controller
         $data = $this->validatedData($request);
         $data['activo'] = $request->boolean('activo');
         $data['descuento'] = 0;
+        $cantidadInicial = (int) $data['cantidad_stock'];
+        $precioInicial = (float) $data['precio_inversion'];
+        $data['cantidad_stock'] = 0;
+        $data['precio_inversion'] = 0;
 
-        DB::transaction(function () use ($request, $data) {
+        DB::transaction(function () use ($request, $data, $cantidadInicial, $precioInicial) {
             $product = Product::create($data);
+            $product->agregarLote($cantidadInicial, $precioInicial);
 
             $this->syncProductImages($product, $request);
         });
@@ -48,8 +53,8 @@ class ProductController extends Controller
 
     public function edit(int $id)
     {
-        $products = Product::withTrashed()->with('productImages')->latest()->get();
-        $product = Product::withTrashed()->with('productImages')->findOrFail($id);
+        $products = Product::withTrashed()->with(['productImages', 'batches.invoiceItem.invoice'])->latest()->get();
+        $product = Product::withTrashed()->with(['productImages', 'batches.invoiceItem.invoice'])->findOrFail($id);
 
         return view('admin.inventario', [
             'products' => $products,
@@ -65,9 +70,10 @@ class ProductController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $product = Product::withTrashed()->with('productImages')->findOrFail($id);
+        $product = Product::withTrashed()->with(['productImages', 'batches.invoiceItem.invoice'])->findOrFail($id);
         $data = $this->validatedData($request);
         $data['activo'] = $request->boolean('activo');
+        unset($data['cantidad_stock'], $data['precio_inversion']);
 
         DB::transaction(function () use ($request, $product, $data) {
             $product->update($data);
@@ -95,6 +101,35 @@ class ProductController extends Controller
             'success' => true,
             'activo' => $product->activo,
         ]);
+    }
+
+    public function reponerStock(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'cantidad' => ['required', 'integer', 'min:1'],
+            'costo_unitario' => ['required', 'numeric', 'min:0'],
+            'precio_venta' => ['required', 'numeric', 'min:0'],
+            'fecha_ingreso' => ['required', 'date'],
+        ]);
+
+        $batch = null;
+
+        DB::transaction(function () use ($product, $data, &$batch) {
+            $batch = $product->agregarLote(
+                (int) $data['cantidad'],
+                (float) $data['costo_unitario'],
+                null,
+                (float) $data['precio_venta']
+            );
+
+            $batch->update([
+                'fecha_ingreso' => $data['fecha_ingreso'],
+            ]);
+        });
+
+        return redirect()
+            ->route('admin.inventario.index', ['batch_id' => $batch->id])
+            ->with('success', "Stock repuesto correctamente. Lote #{$batch->id} creado.");
     }
 
     private function validatedData(Request $request): array

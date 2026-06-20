@@ -14,6 +14,7 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_batch_id',
         'cantidad',
         'precio_unitario',
         'descuento_aplicado',
@@ -38,6 +39,11 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class)->withTrashed();
+    }
+
+    public function productBatch(): BelongsTo
+    {
+        return $this->belongsTo(ProductBatch::class);
     }
 
     public function review(): HasOne

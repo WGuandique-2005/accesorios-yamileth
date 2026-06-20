@@ -13,6 +13,7 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'product_id',
+        'product_batch_id',
         'nombre_producto',
         'cantidad',
         'precio_unitario_temu',
@@ -36,5 +37,10 @@ class InvoiceItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class)->withTrashed();
+    }
+
+    public function productBatch(): BelongsTo
+    {
+        return $this->belongsTo(ProductBatch::class);
     }
 }

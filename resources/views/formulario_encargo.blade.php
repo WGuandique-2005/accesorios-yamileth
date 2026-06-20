@@ -40,14 +40,17 @@
             <div class="space-y-6">
                 <section class="rounded-xl bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-xl font-bold text-[#8A486F]">Productos</h2>
+                    <p class="mb-3 text-sm text-gray-600">
+                        El precio mostrado corresponde al lote más antiguo disponible. Si se agota, el siguiente lote puede tener otro valor.
+                    </p>
                     <div class="grid gap-4 sm:grid-cols-[1fr_130px_auto]">
                         <select id="productSelect" class="rounded-lg border-gray-300">
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}" data-name="{{ $product->nombre }}"
-                                    data-price="{{ $product->precio_final }}" data-stock="{{ $product->cantidad_stock }}"
+                                    data-price="{{ $product->precio_final }}" data-stock="{{ $product->stock_publico_disponible }}"
                                     data-image="{{ $product->imagen_principal ? asset('storage/' . $product->imagen_principal) : asset('images/logo.jpeg') }}">
                                     {{ $product->nombre }} - ${{ number_format($product->precio_final, 2) }}
-                                    ({{ $product->cantidad_stock }} disp.)
+                                    ({{ $product->stock_publico_disponible }} disp.)
                                 </option>
                             @endforeach
                         </select>
@@ -114,6 +117,28 @@
         </form>
     </main>
 
+    <div id="stockModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wide text-[#8A486F]">Aviso</p>
+                    <h2 class="mt-1 text-2xl font-bold text-[#8A486F]">Eso no se puede</h2>
+                </div>
+                <button type="button" id="closeStockModalBtn"
+                    class="rounded-full px-3 py-1 text-2xl leading-none text-gray-400 hover:bg-gray-100 hover:text-gray-700">
+                    &times;
+                </button>
+            </div>
+            <p id="stockModalMessage" class="mt-4 text-sm leading-6 text-gray-700"></p>
+            <div class="mt-6 flex justify-end">
+                <button type="button" id="acceptStockModalBtn"
+                    class="rounded-full bg-[#8A486F] px-5 py-2.5 font-semibold text-white hover:bg-[#733b5c]">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
     @include('partials.footer')
 
     <script>
@@ -125,6 +150,21 @@
         const itemsContainer = document.getElementById('itemsContainer');
         const summaryContainer = document.getElementById('summaryContainer');
         const totalLabel = document.getElementById('totalLabel');
+        const stockModal = document.getElementById('stockModal');
+        const stockModalMessage = document.getElementById('stockModalMessage');
+        const closeStockModalBtn = document.getElementById('closeStockModalBtn');
+        const acceptStockModalBtn = document.getElementById('acceptStockModalBtn');
+
+        function showStockModal(message) {
+            stockModalMessage.textContent = message;
+            stockModal.classList.remove('hidden');
+            stockModal.classList.add('flex');
+        }
+
+        function hideStockModal() {
+            stockModal.classList.add('hidden');
+            stockModal.classList.remove('flex');
+        }
 
         function optionData(option) {
             return {
@@ -141,7 +181,16 @@
             if (!option) return;
             const data = optionData(option);
             const amount = parseInt(qty ?? quantity.value, 10);
-            if (!amount || amount < 1 || amount > data.stock) return alert('Cantidad inválida o mayor al stock disponible.');
+            if (!amount || amount < 1) {
+                showStockModal('Debes indicar una cantidad válida mayor a cero.');
+                return;
+            }
+
+            if (amount > data.stock) {
+                showStockModal(`No puedes pedir ${amount} unidades porque solo hay ${data.stock} disponibles del lote actual.`);
+                return;
+            }
+
             const existing = items.find(item => item.id == data.id);
             if (existing) {
                 existing.quantity = Math.min(data.stock, existing.quantity + amount);
@@ -191,6 +240,18 @@
         }
 
         document.getElementById('addProductBtn').addEventListener('click', () => addItem());
+        closeStockModalBtn?.addEventListener('click', hideStockModal);
+        acceptStockModalBtn?.addEventListener('click', hideStockModal);
+        stockModal?.addEventListener('click', (event) => {
+            if (event.target === stockModal) {
+                hideStockModal();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !stockModal.classList.contains('hidden')) {
+                hideStockModal();
+            }
+        });
 
         if (oldProducts.length) {
             oldProducts.forEach(item => addItem(item.id, item.cantidad));

@@ -59,6 +59,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/inventario/{id}', [AdminProductController::class, 'update'])->name('admin.inventario.update');
     Route::delete('/admin/inventario/{id}', [AdminProductController::class, 'destroy'])->name('admin.inventario.destroy');
     Route::patch('/admin/inventario/{id}/toggle', [AdminProductController::class, 'toggle'])->name('admin.inventario.toggle');
+    Route::post('/admin/inventario/{product}/reponer', [AdminProductController::class, 'reponerStock'])->name('admin.inventario.reponer');
 
     Route::get('/admin/pedidos', [AdminOrderController::class, 'index'])->name('admin.pedidos.index');
     Route::get('/admin/pedidos/{id}', [AdminOrderController::class, 'show'])->name('admin.pedidos.show');

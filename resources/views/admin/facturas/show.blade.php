@@ -64,7 +64,15 @@
                                 <tr>
                                     <td class="p-4">
                                         <p class="font-semibold">{{ $item->nombre_producto }}</p>
-                                        @if ($item->product)
+                                        @if ($item->productBatch)
+                                            @php
+                                                $batch = $item->productBatch;
+                                            @endphp
+                                            <p class="text-xs text-gray-500">Vinculado a inventario</p>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                Documenta el Lote #{{ $batch->id }} (creado el {{ $batch->fecha_ingreso?->format('d/m/Y') }})
+                                            </p>
+                                        @elseif ($item->product)
                                             <p class="text-xs text-gray-500">Vinculado a inventario</p>
                                         @endif
                                     </td>

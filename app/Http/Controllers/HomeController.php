@@ -13,7 +13,7 @@ class HomeController extends Controller
         $maxPrice = $request->input('max_price');
         $sort = $request->input('sort');
         $query = \App\Models\Product::query()
-            ->with(['productImages', 'reviews'])
+            ->with(['productImages', 'reviews', 'batches'])
             ->activos()
             ->enStock()
             ->orderByDesc('created_at');

@@ -61,7 +61,11 @@
                 $message .= "Cliente: " . Auth::user()->name . "\n";
                 $message .= "Detalles:\n";
                 foreach ($order->orderItems as $item) {
-                    $message .= "- " . ($item->product?->nombre ?? 'Producto') . " x " . $item->cantidad . "\n";
+                    $message .= "- " . ($item->product?->nombre ?? 'Producto') . " x " . $item->cantidad;
+                    if ($item->productBatch) {
+                        $message .= " (Lote #" . $item->productBatch->id . ")";
+                    }
+                    $message .= "\n";
                 }
                 $message .= "Subtotal: $" . number_format($order->precio_total, 2) . "\n";
                 $message .= "Envío: $" . number_format($order->cargo_envio, 2) . "\n";
@@ -90,6 +94,9 @@
                                     alt="{{ $item->product?->nombre ?? 'Producto' }}" class="h-12 w-12 rounded-lg object-cover">
                                 <div>
                                     <p class="font-semibold">{{ $item->product?->nombre ?? 'Producto no disponible' }}</p>
+                                    @if ($item->productBatch)
+                                        <p class="text-xs text-gray-500">Lote #{{ $item->productBatch->id }} · Venta ${{ number_format($item->precio_unitario, 2) }}</p>
+                                    @endif
                                     <p class="text-sm text-gray-500">Cantidad: {{ $item->cantidad }}</p>
                                     <p class="text-sm text-gray-500">Subtotal: ${{ number_format($item->subtotal, 2) }}</p>
                                 </div>

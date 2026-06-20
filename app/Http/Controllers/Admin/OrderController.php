@@ -13,7 +13,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'orderItems.product', 'shipmentTracking'])->latest();
+        $query = Order::with(['user', 'orderItems.productBatch', 'orderItems.product', 'shipmentTracking'])->latest();
 
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
@@ -27,10 +27,10 @@ class OrderController extends Controller
 
     public function show(int $id)
     {
-        $orders = Order::with(['user', 'orderItems.product', 'shipmentTracking'])
+        $orders = Order::with(['user', 'orderItems.productBatch', 'orderItems.product', 'shipmentTracking'])
             ->latest()
             ->paginate(15);
-        $selectedOrder = Order::with(['user', 'orderItems.product', 'shipmentTracking'])->findOrFail($id);
+        $selectedOrder = Order::with(['user', 'orderItems.productBatch', 'orderItems.product', 'shipmentTracking'])->findOrFail($id);
 
         return view('admin.pedidos', compact('orders', 'selectedOrder'));
     }
@@ -58,26 +58,25 @@ class OrderController extends Controller
             $order->update(['estado' => $validated['estado']]);
 
             if ($validated['estado'] === 'cancelado' && $previousEstado !== 'cancelado') {
-                $itemsPorProducto = $order->orderItems
-                    ->groupBy('product_id')
-                    ->map(fn ($items) => (int) $items->sum('cantidad'));
+                $products = Product::withTrashed()
+                    ->whereIn('id', $order->orderItems->pluck('product_id')->filter())
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('id');
 
-                if ($itemsPorProducto->isNotEmpty()) {
-                    $products = Product::withTrashed()
-                        ->whereIn('id', $itemsPorProducto->keys())
-                        ->lockForUpdate()
-                        ->get()
-                        ->keyBy('id');
+                foreach ($order->orderItems as $item) {
+                    $product = $products->get($item->product_id);
 
-                    foreach ($itemsPorProducto as $productId => $cantidad) {
-                        $product = $products->get($productId);
-
-                        if (! $product) {
-                            continue;
-                        }
-
-                        $product->increment('cantidad_stock', $cantidad);
+                    if (! $product) {
+                        continue;
                     }
+
+                    $product->agregarLote(
+                        (int) $item->cantidad,
+                        (float) ($item->precio_inversion_aplicado ?: $product->precio_inversion),
+                        null,
+                        (float) ($item->precio_unitario ?: $product->precio_unitario)
+                    );
                 }
             }
 

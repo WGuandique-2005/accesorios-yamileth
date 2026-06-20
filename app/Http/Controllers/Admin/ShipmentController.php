@@ -55,8 +55,8 @@ class ShipmentController extends Controller
     {
         $tracking = ShipmentTracking::with('order')->findOrFail($id);
 
-        if ($tracking->isLockedForUpdates()) {
-            $message = 'Este envío ya está cerrado y no se puede modificar.';
+        if ($tracking->isLockedForAdminUpdates()) {
+            $message = 'Este envío ya fue cobrado y no se puede modificar.';
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -89,6 +89,21 @@ class ShipmentController extends Controller
 
         if ($request->has('admin_cobro')) {
             $adminCobro = $request->boolean('admin_cobro');
+
+            if ($adminCobro && ! $tracking->cliente_retiro) {
+                $message = 'Primero debes confirmar que el cliente retiró el pedido antes de marcarlo como cobrado.';
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'locked' => false,
+                    ], 422);
+                }
+
+                return back()->with('error', $message);
+            }
+
             $tracking->admin_cobro = $adminCobro;
             $tracking->fecha_cobro = $adminCobro
                 ? ($tracking->fecha_cobro ?? now()->toDateString())

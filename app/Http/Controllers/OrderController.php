@@ -14,11 +14,11 @@ class OrderController extends Controller
 {
     public function create(Request $request)
     {
-        $products = Product::activos()->enStock()->with('productImages')->orderBy('nombre')->get();
+        $products = Product::activos()->enStock()->with(['productImages', 'batches'])->orderBy('nombre')->get();
         $selectedProduct = null;
 
         if ($request->filled('producto')) {
-            $selectedProduct = Product::activos()->enStock()->with('productImages')->find($request->integer('producto'));
+            $selectedProduct = Product::activos()->enStock()->with(['productImages', 'batches'])->find($request->integer('producto'));
         }
 
         return view('formulario_encargo', compact('products', 'selectedProduct'));
@@ -53,18 +53,35 @@ class OrderController extends Controller
                     ->get()
                     ->keyBy('id');
 
+                $preparedItems = [];
                 $precioTotal = 0;
 
                 foreach ($items as $item) {
                     $product = $products->get($item['id']);
 
-                    if (! $product || ! $product->activo || $product->cantidad_stock < $item['cantidad']) {
+                    if (! $product || ! $product->activo) {
                         throw ValidationException::withMessages([
-                            'productos' => 'Stock insuficiente para '.($product?->nombre ?? 'el producto seleccionado'),
+                            'productos' => 'No se pudo procesar '.($product?->nombre ?? 'el producto seleccionado').'.',
                         ]);
                     }
 
-                    $precioTotal += ($product->precio_unitario - $product->descuento) * $item['cantidad'];
+                    if ($item['cantidad'] > $product->stock_publico_disponible) {
+                        throw ValidationException::withMessages([
+                            'productos' => "Solo hay {$product->stock_publico_disponible} unidades disponibles del lote actual de {$product->nombre}.",
+                        ]);
+                    }
+
+                    $consumo = $product->consumirStockFifo($item['cantidad']);
+                    $descuento = (float) $product->descuento;
+                    $preparedItems[] = [
+                        'product' => $product,
+                        'consumo' => $consumo,
+                        'descuento' => $descuento,
+                    ];
+
+                    foreach ($consumo as $lote) {
+                        $precioTotal += (($lote['venta'] - $descuento) * $lote['cantidad']);
+                    }
                 }
 
                 $order = Order::create([
@@ -79,22 +96,33 @@ class OrderController extends Controller
                     'notas' => $validated['notas'] ?? null,
                 ]);
 
-                foreach ($items as $item) {
-                    $product = $products->get($item['id']);
+                foreach ($preparedItems as $prepared) {
+                    /** @var \App\Models\Product $product */
+                    $product = $prepared['product'];
+                    $descuento = $prepared['descuento'];
 
-                    $order->orderItems()->create([
-                        'product_id' => $product->id,
-                        'cantidad' => $item['cantidad'],
-                        'precio_unitario' => $product->precio_unitario,
-                        'descuento_aplicado' => $product->descuento,
-                        'precio_inversion_aplicado' => $product->precio_inversion,
-                    ]);
-
-                    $product->decrement('cantidad_stock', $item['cantidad']);
+                    foreach ($prepared['consumo'] as $lote) {
+                        $order->orderItems()->create([
+                            'product_id' => $product->id,
+                            'product_batch_id' => $lote['batch_id'],
+                            'cantidad' => $lote['cantidad'],
+                            'precio_unitario' => $lote['venta'],
+                            'descuento_aplicado' => $descuento,
+                            'precio_inversion_aplicado' => $lote['costo'],
+                        ]);
+                    }
                 }
             });
         } catch (ValidationException $exception) {
             return back()->withInput()->withErrors($exception->errors());
+        } catch (\Exception $exception) {
+            if (str_contains($exception->getMessage(), 'Stock insuficiente')) {
+                return back()->withInput()->with('error', $exception->getMessage());
+            }
+
+            report($exception);
+
+            return back()->withInput()->with('error', 'No se pudo guardar el encargo. Intenta de nuevo.');
         } catch (\Throwable $exception) {
             report($exception);
 
@@ -107,7 +135,7 @@ class OrderController extends Controller
     public function myOrders()
     {
         $orders = Order::where('user_id', Auth::id())
-            ->with('orderItems.product.productImages', 'orderItems.review')
+            ->with('orderItems.product.productImages', 'orderItems.productBatch', 'orderItems.review')
             ->latest()
             ->get();
 

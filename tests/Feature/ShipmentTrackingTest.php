@@ -82,7 +82,7 @@ class ShipmentTrackingTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function test_admin_puede_marcar_y_desmarcar_retiro_y_cobro_desde_envios(): void
+    public function test_admin_puede_marcar_retiro_y_luego_cobro_desde_envios_y_queda_bloqueado(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);
         $customer = User::factory()->create(['rol' => 'cliente']);
@@ -129,6 +129,20 @@ class ShipmentTrackingTest extends TestCase
 
         $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
             'admin_cobro' => true,
+        ])->assertStatus(422)->assertJsonPath('locked', false);
+
+        $tracking->refresh();
+        $this->assertFalse($tracking->admin_cobro);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'cliente_retiro' => true,
+        ])->assertOk()->assertJsonPath('cliente_retiro', true);
+
+        $tracking->refresh();
+        $this->assertTrue($tracking->cliente_retiro);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'admin_cobro' => true,
         ])->assertOk()->assertJsonPath('admin_cobro', true);
 
         $tracking->refresh();
@@ -137,7 +151,7 @@ class ShipmentTrackingTest extends TestCase
 
         $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
             'cliente_retiro' => true,
-        ])->assertOk()->assertJsonPath('cliente_retiro', true);
+        ])->assertStatus(422)->assertJsonPath('locked', true);
 
         $tracking->refresh();
         $this->assertTrue($tracking->cliente_retiro);
@@ -188,7 +202,7 @@ class ShipmentTrackingTest extends TestCase
         $this->assertSame('cancelado', $cancelledOrder->estado);
     }
 
-    public function test_el_envio_ya_no_se_puede_modificar_cuando_el_pedido_esta_entregado(): void
+    public function test_el_envio_puede_modificarse_hasta_que_este_cobrado_aunque_el_pedido_este_entregado(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);
         $customer = User::factory()->create(['rol' => 'cliente']);
@@ -212,10 +226,18 @@ class ShipmentTrackingTest extends TestCase
 
         $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
             'agencia' => 'Otra agencia',
-        ])->assertStatus(422)->assertJsonPath('locked', true);
+        ])->assertOk()->assertJsonPath('agencia', 'Otra agencia');
 
         $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
             'cliente_retiro' => true,
+        ])->assertOk()->assertJsonPath('cliente_retiro', true);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'admin_cobro' => true,
+        ])->assertOk()->assertJsonPath('admin_cobro', true);
+
+        $this->actingAs($admin)->patchJson(route('admin.envios.update', $tracking), [
+            'agencia' => 'Ya no debería cambiar',
         ])->assertStatus(422)->assertJsonPath('locked', true);
     }
 }

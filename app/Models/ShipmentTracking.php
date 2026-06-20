@@ -51,6 +51,16 @@ class ShipmentTracking extends Model
         return $this->cliente_retiro && $this->admin_cobro;
     }
 
+    public function isLockedForAdminUpdates(): bool
+    {
+        return (bool) $this->admin_cobro;
+    }
+
+    public function puedeMarcarCobro(): bool
+    {
+        return $this->cliente_retiro && ! $this->admin_cobro;
+    }
+
     public function getEstadoBadgeAttribute(): array
     {
         if ($this->admin_cobro) {

@@ -43,6 +43,11 @@ class Product extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
+    public function batches(): HasMany
+    {
+        return $this->hasMany(ProductBatch::class)->orderBy('fecha_ingreso')->orderBy('id');
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
@@ -58,24 +63,132 @@ class Product extends Model
         return $this->hasOne(ProductImage::class)->orderBy('orden');
     }
 
+    public function agregarLote(int $cantidad, float $precioInversion, ?int $invoiceItemId = null, ?float $precioVenta = null): ProductBatch
+    {
+        $esPrimerLote = ! $this->batches()->exists();
+        $precioVentaFinal = $precioVenta ?? (float) $this->precio_unitario;
+
+        $batch = $this->batches()->create([
+            'invoice_item_id' => $invoiceItemId,
+            'cantidad_inicial' => $cantidad,
+            'cantidad_disponible' => $cantidad,
+            'precio_inversion' => round($precioInversion, 2),
+            'precio_venta' => round($precioVentaFinal, 2),
+            'fecha_ingreso' => now()->toDateString(),
+        ]);
+
+        $this->update([
+            'cantidad_stock' => $this->cantidad_stock + $cantidad,
+            'precio_inversion' => $esPrimerLote ? round($precioInversion, 2) : $this->precio_inversion,
+            'precio_unitario' => round($precioVentaFinal, 2),
+        ]);
+
+        return $batch;
+    }
+
+    public function loteDisponibleActual(): ?ProductBatch
+    {
+        return $this->relationLoaded('batches')
+            ? $this->batches->firstWhere('cantidad_disponible', '>', 0)
+            : $this->batches()->disponibles()->first();
+    }
+
+    /**
+     * @return array<int, array{batch_id:int,cantidad:int,costo:float,venta:float}>
+     */
+    public function consumirStockFifo(int $cantidad): array
+    {
+        if ($cantidad <= 0) {
+            return [];
+        }
+
+        $batch = $this->batches()
+            ->disponibles()
+            ->ordenAntiguedad()
+            ->lockForUpdate()
+            ->first();
+
+        if ($batch) {
+            $disponible = (int) $batch->cantidad_disponible;
+
+            if ($disponible < $cantidad) {
+                throw new \Exception("Stock insuficiente para {$this->nombre}, disponible: {$disponible}");
+            }
+
+            $batch->decrement('cantidad_disponible', $cantidad);
+
+            $this->decrement('cantidad_stock', $cantidad);
+
+            return [[
+                'batch_id' => $batch->id,
+                'cantidad' => $cantidad,
+                'costo' => (float) $batch->precio_inversion,
+                'venta' => (float) ($batch->precio_venta ?: $this->precio_unitario),
+            ]];
+        }
+
+        if ($this->cantidad_stock < $cantidad) {
+            throw new \Exception("Stock insuficiente para {$this->nombre}, disponible: {$this->cantidad_stock}");
+        }
+
+        $this->decrement('cantidad_stock', $cantidad);
+
+        return [[
+            'batch_id' => null,
+            'cantidad' => $cantidad,
+            'costo' => (float) $this->precio_inversion,
+            'venta' => (float) $this->precio_unitario,
+        ]];
+    }
+
+    public function getCostoPromedioDisponibleAttribute(): float
+    {
+        $query = $this->batches()->disponibles();
+        $totalCantidad = (int) (clone $query)->sum('cantidad_disponible');
+        if ($totalCantidad <= 0) {
+            return 0.0;
+        }
+
+        $totalCosto = (float) (clone $query)
+            ->selectRaw('COALESCE(SUM(cantidad_disponible * precio_inversion), 0) as total')
+            ->value('total');
+
+        return round($totalCosto / $totalCantidad, 2);
+    }
+
+    public function getPrecioVentaDisponibleAttribute(): float
+    {
+        $batch = $this->loteDisponibleActual();
+
+        return (float) ($batch?->precio_venta ?? $this->precio_unitario);
+    }
+
+    public function getStockPublicoDisponibleAttribute(): int
+    {
+        return (int) ($this->loteDisponibleActual()?->cantidad_disponible ?? $this->cantidad_stock);
+    }
+
     // ── Accessors (columnas calculadas) ─────────────────
 
     // Ganancia por unidad
     public function getGananciaUnitariaAttribute(): float
     {
-        return $this->precio_unitario - $this->precio_inversion;
+        return $this->precio_unitario - ($this->costo_promedio_disponible ?: (float) $this->precio_inversion);
     }
 
     // Precio final después de descuento
     public function getPrecioFinalAttribute(): float
     {
-        return $this->precio_unitario - $this->descuento;
+        return $this->precio_venta_disponible - $this->descuento;
     }
 
     // Valor total del stock en inversión
     public function getValorStockInversionAttribute(): float
     {
-        return $this->precio_inversion * $this->cantidad_stock;
+        return (float) $this->batches()
+            ->disponibles()
+            ->selectRaw('COALESCE(SUM(cantidad_disponible * precio_inversion), 0) as total')
+            ->value('total');
     }
 
     // Valor total del stock en venta

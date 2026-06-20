@@ -13,7 +13,7 @@ class WelcomeController extends Controller
             return redirect()->intended('/home');
         }
 
-        $products = \App\Models\Product::activos()->enStock()->get();
+        $products = \App\Models\Product::activos()->enStock()->with(['productImages', 'batches'])->get();
 
         return view('welcome', compact('products'));
     }

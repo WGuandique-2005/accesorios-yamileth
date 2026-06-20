@@ -19,12 +19,13 @@ class OrderCancellationStockTest extends TestCase
 
         $product = Product::create([
             'nombre' => 'Pulsera',
-            'cantidad_stock' => 5,
+            'cantidad_stock' => 0,
             'precio_unitario' => 20,
             'precio_inversion' => 8,
             'descuento' => 0,
             'activo' => true,
         ]);
+        $product->agregarLote(5, 8);
 
         $this->actingAs($customer)->post(route('encargos.store'), [
             'productos' => [

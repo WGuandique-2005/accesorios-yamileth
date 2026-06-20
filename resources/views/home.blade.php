@@ -241,7 +241,7 @@
                             <h4 class="font-body-lg text-body-lg text-on-surface mb-1">{{ $product->nombre }}</h4>
                             <div class="flex justify-center items-center gap-2 mb-4">
                                 <span
-                                    class="font-h3 text-h3 text-primary">${{ number_format($product->precio_unitario, 2) }}</span>
+                                    class="font-h3 text-h3 text-primary">${{ number_format($product->precio_final, 2) }}</span>
                                 @if ($product->descuento > 0)
                                     <span
                                         class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-full font-label-caps text-label-caps">-

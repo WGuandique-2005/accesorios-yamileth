@@ -141,6 +141,9 @@
                         @foreach ($selectedOrder->orderItems as $item)
                             <div class="py-3">
                                 <p class="font-semibold">{{ $item->product?->nombre ?? 'Producto no disponible' }}</p>
+                                @if ($item->productBatch)
+                                    <p class="text-xs text-gray-500">Lote #{{ $item->productBatch->id }} · Venta ${{ number_format($item->precio_unitario, 2) }}</p>
+                                @endif
                                 <p class="text-sm text-gray-500">{{ $item->cantidad }} x
                                     ${{ number_format($item->precio_unitario - $item->descuento_aplicado, 2) }} =
                                     ${{ number_format($item->subtotal, 2) }}</p>

@@ -10,7 +10,7 @@ class ProductController extends Controller
     {
         $product = Product::activos()
             ->enStock()
-            ->with(['productImages', 'reviews.user'])
+            ->with(['productImages', 'reviews.user', 'batches'])
             ->find($id);
 
         if (! $product) {

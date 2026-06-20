@@ -57,7 +57,10 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($shipments as $shipment)
-                            @php $locked = $shipment->isLockedForUpdates(); @endphp
+                            @php
+                                $locked = $shipment->isLockedForAdminUpdates();
+                                $canMarkCobro = $shipment->puedeMarcarCobro();
+                            @endphp
                             <tr>
                                 <td class="p-4 font-semibold text-[#8A486F]">
                                     #{{ $shipment->order_id }}
@@ -114,9 +117,9 @@
                                         data-field="admin_cobro"
                                         data-next-value="{{ $shipment->admin_cobro ? 'false' : 'true' }}"
                                         data-confirm-label="{{ $shipment->admin_cobro ? 'quitar cobro' : 'marcar cobro' }}"
-                                        @disabled($locked)
+                                        @disabled($locked || ! $canMarkCobro)
                                         class="shipment-toggle mt-2 block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">
-                                        {{ $locked ? 'Bloqueado' : ($shipment->admin_cobro ? 'Quitar cobro' : 'Ya cobré') }}
+                                        {{ $locked ? 'Bloqueado' : ($shipment->admin_cobro ? 'Quitar cobro' : ($canMarkCobro ? 'Ya cobré' : 'Pendiente de retiro')) }}
                                     </button>
                                 </td>
                                 <td class="p-4">
@@ -171,6 +174,24 @@
             document.body.style.overflow = isOpen ? 'hidden' : '';
         };
 
+        const lockShipmentRow = (button) => {
+            const row = button.closest('tr');
+            if (!row) return;
+
+            row.querySelectorAll('[data-agency-input], .shipment-agency-save, .shipment-toggle').forEach((control) => {
+                control.disabled = true;
+                control.classList.add('disabled:cursor-not-allowed', 'disabled:opacity-50');
+            });
+
+            row.querySelectorAll('.shipment-toggle[data-field="cliente_retiro"]').forEach((control) => {
+                control.textContent = 'Bloqueado';
+            });
+
+            row.querySelectorAll('.shipment-toggle[data-field="admin_cobro"]').forEach((control) => {
+                control.textContent = 'Bloqueado';
+            });
+        };
+
         document.querySelectorAll('.shipment-toggle').forEach((button) => {
             button.addEventListener('click', async () => {
                 if (button.disabled) return;
@@ -211,7 +232,11 @@
                         }
                         button.dataset.nextValue = data.admin_cobro ? 'false' : 'true';
                         button.dataset.confirmLabel = data.admin_cobro ? 'quitar cobro' : 'marcar cobro';
-                        button.textContent = data.admin_cobro ? 'Quitar cobro' : 'Ya cobré';
+                        button.textContent = data.admin_cobro ? 'Bloqueado' : 'Ya cobré';
+
+                        if (data.admin_cobro) {
+                            lockShipmentRow(button);
+                        }
                     }
                 };
 

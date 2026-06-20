@@ -15,7 +15,7 @@ class InvoiceDiscountTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_la_factura_actualiza_el_costo_efectivo_del_producto(): void
+    public function test_la_factura_no_modifica_stock_y_referencia_el_lote_existente(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);
         $product = Product::create([
@@ -27,6 +27,10 @@ class InvoiceDiscountTest extends TestCase
             'activo' => true,
         ]);
 
+        $batch = $product->agregarLote(2, 10);
+        $stockAntes = $product->fresh()->cantidad_stock;
+        $costoAntes = (string) $product->fresh()->precio_inversion;
+
         $this->actingAs($admin)->post(route('admin.facturas.store'), [
             'numero_factura' => 'F-100',
             'fecha_compra' => now()->toDateString(),
@@ -34,6 +38,7 @@ class InvoiceDiscountTest extends TestCase
             'items' => [
                 [
                     'product_id' => $product->id,
+                    'product_batch_id' => $batch->id,
                     'nombre_producto' => 'Set',
                     'cantidad' => 2,
                     'precio_unitario_temu' => 10,
@@ -43,7 +48,8 @@ class InvoiceDiscountTest extends TestCase
 
         $product->refresh();
 
-        $this->assertSame('7.00', (string) $product->precio_inversion);
+        $this->assertSame($stockAntes, $product->cantidad_stock);
+        $this->assertSame($costoAntes, (string) $product->precio_inversion);
 
         $invoice = PurchaseInvoice::first();
         $this->assertNotNull($invoice);
@@ -53,6 +59,10 @@ class InvoiceDiscountTest extends TestCase
         $item = InvoiceItem::first();
         $this->assertNotNull($item);
         $this->assertSame('20.00', (string) $item->subtotal);
+        $this->assertSame($batch->id, $item->product_batch_id);
+
+        $batch->refresh();
+        $this->assertSame($item->id, $batch->invoice_item_id);
     }
 
     public function test_dashboard_y_analitica_muestran_el_descuento_de_facturas(): void
@@ -77,9 +87,31 @@ class InvoiceDiscountTest extends TestCase
             ->assertSee('$8.00', false);
     }
 
-    public function test_los_productos_ya_facturados_no_aparecen_en_nuevas_facturas(): void
+    public function test_el_formulario_de_factura_muestra_productos_y_lotes_disponibles(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);
+        $product = Product::create([
+            'nombre' => 'Producto loteado',
+            'cantidad_stock' => 10,
+            'precio_unitario' => 20,
+            'precio_inversion' => 10,
+            'descuento' => 0,
+            'activo' => true,
+        ]);
+        $product->agregarLote(3, 7.5);
+
+        $response = $this->actingAs($admin)->get(route('admin.facturas.create'));
+
+        $response->assertOk();
+        $response->assertSee('Producto loteado', false);
+        $response->assertSee('data-product-batch-select', false);
+        $response->assertSee('Costo unitario', false);
+    }
+
+    public function test_el_formulario_de_factura_oculta_productos_que_ya_no_tienen_lotes_disponibles(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
         $facturado = Product::create([
             'nombre' => 'Producto facturado',
             'cantidad_stock' => 10,
@@ -88,30 +120,33 @@ class InvoiceDiscountTest extends TestCase
             'descuento' => 0,
             'activo' => true,
         ]);
-        $disponible = Product::create([
-            'nombre' => 'Producto disponible',
-            'cantidad_stock' => 10,
-            'precio_unitario' => 15,
-            'precio_inversion' => 7,
-            'descuento' => 0,
-            'activo' => true,
-        ]);
-
-        PurchaseInvoice::create([
-            'numero_factura' => 'F-102',
+        $batchFacturado = $facturado->agregarLote(2, 10);
+        $invoice = PurchaseInvoice::create([
+            'numero_factura' => 'F-300',
             'fecha_compra' => now()->toDateString(),
             'total_inversion' => 20,
-            'descuento_temu' => 4,
-            'descuento_por_producto' => 4,
+            'descuento_temu' => 0,
+            'descuento_por_producto' => 0,
         ]);
-        InvoiceItem::create([
-            'invoice_id' => PurchaseInvoice::first()->id,
+        $invoiceItem = InvoiceItem::create([
+            'invoice_id' => $invoice->id,
             'product_id' => $facturado->id,
-            'nombre_producto' => $facturado->nombre,
+            'product_batch_id' => $batchFacturado->id,
+            'nombre_producto' => 'Producto facturado',
             'cantidad' => 2,
             'precio_unitario_temu' => 10,
             'subtotal' => 20,
         ]);
+
+        $disponible = Product::create([
+            'nombre' => 'Producto disponible',
+            'cantidad_stock' => 10,
+            'precio_unitario' => 20,
+            'precio_inversion' => 10,
+            'descuento' => 0,
+            'activo' => true,
+        ]);
+        $disponible->agregarLote(3, 7.5);
 
         $response = $this->actingAs($admin)->get(route('admin.facturas.create'));
 
@@ -131,6 +166,7 @@ class InvoiceDiscountTest extends TestCase
             'descuento' => 0,
             'activo' => true,
         ]);
+        $batch = $product->agregarLote(1, 10);
 
         $response = $this->actingAs($admin)->post(route('admin.facturas.store'), [
             'numero_factura' => 'F-103',
@@ -139,12 +175,14 @@ class InvoiceDiscountTest extends TestCase
             'items' => [
                 [
                     'product_id' => $product->id,
+                    'product_batch_id' => $batch->id,
                     'nombre_producto' => 'Producto unico',
                     'cantidad' => 1,
                     'precio_unitario_temu' => 10,
                 ],
                 [
                     'product_id' => $product->id,
+                    'product_batch_id' => $batch->id,
                     'nombre_producto' => 'Producto unico',
                     'cantidad' => 2,
                     'precio_unitario_temu' => 10,
@@ -155,6 +193,56 @@ class InvoiceDiscountTest extends TestCase
         $response->assertSessionHasErrors('items');
         $this->assertDatabaseCount('purchase_invoices', 0);
         $this->assertDatabaseCount('invoice_items', 0);
+    }
+
+    public function test_no_se_puede_facturar_un_lote_ya_facturado(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $product = Product::create([
+            'nombre' => 'Producto bloqueado',
+            'cantidad_stock' => 10,
+            'precio_unitario' => 20,
+            'precio_inversion' => 10,
+            'descuento' => 0,
+            'activo' => true,
+        ]);
+        $batch = $product->agregarLote(1, 10);
+
+        $invoice = PurchaseInvoice::create([
+            'numero_factura' => 'F-1040',
+            'fecha_compra' => now()->toDateString(),
+            'total_inversion' => 10,
+            'descuento_temu' => 0,
+            'descuento_por_producto' => 0,
+        ]);
+        $invoiceItem = InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'product_id' => $product->id,
+            'product_batch_id' => $batch->id,
+            'nombre_producto' => 'Producto bloqueado',
+            'cantidad' => 1,
+            'precio_unitario_temu' => 10,
+            'subtotal' => 10,
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('admin.facturas.store'), [
+            'numero_factura' => 'F-1041',
+            'fecha_compra' => now()->toDateString(),
+            'descuento_temu' => 0,
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'product_batch_id' => $batch->id,
+                    'nombre_producto' => 'Producto bloqueado',
+                    'cantidad' => 1,
+                    'precio_unitario_temu' => 10,
+                ],
+            ],
+        ]);
+
+        $response->assertSessionHasErrors('items.0.product_batch_id');
+        $this->assertDatabaseCount('purchase_invoices', 1);
+        $this->assertDatabaseCount('invoice_items', 1);
     }
 
     public function test_la_factura_muestra_el_total_despues_del_descuento(): void
@@ -205,7 +293,7 @@ class InvoiceDiscountTest extends TestCase
     public function test_el_formulario_de_factura_muestra_precio_total_por_producto(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);
-        Product::create([
+        $product = Product::create([
             'nombre' => 'Producto total',
             'cantidad_stock' => 4,
             'precio_unitario' => 20,
@@ -213,14 +301,15 @@ class InvoiceDiscountTest extends TestCase
             'descuento' => 0,
             'activo' => true,
         ]);
+        $product->agregarLote(4, 7.5);
 
         $response = $this->actingAs($admin)->get(route('admin.facturas.create'));
 
         $response->assertOk();
-        $response->assertSee('Precio total', false);
-        $response->assertSee('Producto total - $7.50', false);
-        $response->assertSee('data-product-quantity="4"', false);
-        $response->assertDontSee('Precio unitario', false);
+        $response->assertSee('Costo unitario', false);
+        $response->assertSee('Producto total', false);
+        $response->assertSee('data-product-card', false);
+        $response->assertDontSee('Precio total', false);
     }
 
     public function test_la_lista_de_facturas_muestra_el_total_neto_con_descuentos_incluidos(): void

@@ -61,7 +61,7 @@
 
             <div class="rounded-xl bg-white p-6 shadow-sm sm:p-8">
                 <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-[#8A486F]">Stock disponible:
-                    {{ $product->cantidad_stock }}</p>
+                    {{ $product->stock_publico_disponible }}</p>
                 <h1 class="font-serif text-4xl font-bold text-[#8A486F]">{{ $product->nombre }}</h1>
 
                 <div class="mt-6 flex flex-wrap items-end gap-3">
@@ -72,6 +72,9 @@
                             ${{ number_format($product->descuento, 2) }}</span>
                     @endif
                 </div>
+                <p class="mt-2 text-sm text-gray-600">
+                    Se vende primero el lote más antiguo disponible. Cuando se agota, el precio puede cambiar al siguiente lote.
+                </p>
 
                 <div class="mt-4 flex flex-col gap-1 text-sm text-gray-600">
                     <div class="flex items-center gap-1"
@@ -92,7 +95,7 @@
                     </div>
                     <div class="rounded-lg bg-[#FDF0F4] p-4">
                         <dt class="text-sm text-gray-500">Stock</dt>
-                        <dd class="text-lg font-semibold">{{ $product->cantidad_stock }} unidades</dd>
+                        <dd class="text-lg font-semibold">{{ $product->stock_publico_disponible }} unidades</dd>
                     </div>
                 </dl>
 
